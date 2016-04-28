@@ -25,7 +25,13 @@ module.exports ={
 			console.log("online");
 			//logged = true;
 			//THIS NEEDS A FIX. it goes here for the asyncronity of Node.js
-			module.exports.sendMessage("carla@localhost", "sup from Node");
+			module.exports.sendMessage("carla"+domain, "sup from Node");
+		});
+		client.on("stanza", function (stanza) {
+			if (stanza.is('message')){
+				console.log("Incoming message from " + stanza.attrs.from + " : " + stanza.getChildText('body').toString());
+			}
+
 		});
 
 	},sendMessage:function (to, msg){
@@ -33,5 +39,6 @@ module.exports ={
 		console.log("entered the send message");
 		var stanza = new Client.Stanza("message", {to: to, type: "chat"}).c("body").t(msg);
 		client.send(stanza);
-	}
+	},
+
 };
