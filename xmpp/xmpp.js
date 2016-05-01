@@ -29,7 +29,8 @@ module.exports ={
 		});
 		client.on("stanza", function (stanza) {
 			if (stanza.is('message')){
-				console.log("Incoming message from " + stanza.attrs.from + " : " + stanza.getChildText('body').toString());
+				io.sockets.connectedtemit(stanza.getChildText('body').toString());
+				//console.log("Incoming message from " + stanza.attrs.from + " : " + stanza.getChildText('body').toString());
 			}
 
 		});
