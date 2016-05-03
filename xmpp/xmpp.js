@@ -2,8 +2,11 @@
 var Client = require("node-xmpp-client");
 
 //vars for initialization.
-var domain = "@cml.chi.itesm.mx";
+//var domain = "@cml.chi.itesm.mx";
+//var domain = "@localhost";
+var domain="cml.chi.itesm.mx";
 var port = 5222;
+//var host = "52.37.160.103";
 
 //Var for session
 //var logged = false;
@@ -12,10 +15,11 @@ var port = 5222;
 var client;
 
 module.exports ={
-	login: function (user,password) {
+	login: function (user,password, io,cb) {
 		client = new Client({
-			jid: user + domain,
+			jid: user+"@"+domain,
 			password: password,
+			host:domain,
 			port: port
 		});
 		client.send(new Client.Stanza("presence", {"type": "available"})
@@ -23,16 +27,14 @@ module.exports ={
 			.c("status").t("Hi I am here stanzas"));
 		client.on("online", function (data) {
 			console.log("online");
-			//logged = true;
-			//THIS NEEDS A FIX. it goes here for the asyncronity of Node.js
-			module.exports.sendMessage("carla"+domain, "sup from Node");
+
+			//module.exports.sendMessage(carla+"@"+domain, "sup from Node");
+			cb(client.jid);
 		});
 		client.on("stanza", function (stanza) {
 			if (stanza.is('message')){
-				io.sockets.connectedtemit(stanza.getChildText('body').toString());
-				//console.log("Incoming message from " + stanza.attrs.from + " : " + stanza.getChildText('body').toString());
+				io.sockets.emit("chat message",stanza.getChildText('body').toString());
 			}
-
 		});
 
 	},sendMessage:function (to, msg){
@@ -40,6 +42,6 @@ module.exports ={
 		console.log("entered the send message");
 		var stanza = new Client.Stanza("message", {to: to, type: "chat"}).c("body").t(msg);
 		client.send(stanza);
-	},
+	}
 
 };

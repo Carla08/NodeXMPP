@@ -2,16 +2,27 @@ doctype html
 html
   head
     title= "XMPP Chat Node.js"
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
     link(rel='stylesheet', href='/Materialize/dist/css/materialize.min.css')
     link(rel="stylesheet", href="/stylesheets/style.css")
-    link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
   body
-    .navbar-fixed
-      nav.light-green
-        .nav-wrapper
-          a(href="#" class="brand-logo ") BEST XMPP Chat
-    .section
-      block content
+    header
+      .navbar-fixed
+        nav.top-nav.teal.lighten-2
+          .nav-wrapper
+            a(href="#" class="brand-logo ") BEST XMPP Chat
+      ul.side-nav.fixed.collection.with-header(id="contacts")
+        li.collection-header.valign-wrapper
+          i.material-icons.medium.valign contacts
+        li.collection-item Example
+      a(href="#" data-activates="slide-out" class="button-collapse")
+        i(class="mdi-navigation-menu")
+
+    main
+      .container
+        .section
+          block content
     script(src="/jquery/dist/jquery.min.js")
     script(src="/Materialize/dist/js/materialize.min.js")
+    script(src="https://cdn.socket.io/socket.io-1.4.5.js")
     block script

@@ -1,14 +1,74 @@
-var express = require('express');
+var express= require("express");
+var app = express();
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var xmpp = require('simple-xmpp');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-var app = express();
+app.locals.io=io;
+app.locals.xmpp=xmpp;
+
+
+
+
+
+xmpp.on('chat', function(from, message) {
+  io.emit("chat message",from+ 'echo: ' + message);
+});
+
+app.locals.users={};
+app.locals.sockets={};
+
+io.on('connection', function(socket){
+  var users={};
+  var sockets={};
+  socket.on("init", function (jid){
+    if(!users[jid]){
+      users[jid]=socket.id;
+      sockets[socket.id]={
+        jid:jid,
+        socket:socket
+      }
+    }
+  });
+
+  socket.on('disconnect', function(){
+    //var jid= sockets[socket.id].jid;
+    //delete sockets[socket.id];
+    //delete users[jid];
+    console.log('user disconnected');
+  });
+
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+  });
+
+  socket.on("chatTo", function (to, msg){
+    xmpp.sendMessage(to,msg);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -57,5 +117,11 @@ app.use(function(err, req, res, next) {
   });
 });
 
+
+
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
 
 module.exports = app;

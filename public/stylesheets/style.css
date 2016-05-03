@@ -1,3 +1,15 @@
-a {
-  color: #00B7FF;
+header, main, footer {
+  padding-left: 240px;
 }
+
+@media only screen and (max-width : 992px) {
+  header, main, footer {
+    padding-left: 0;
+  }
+}
+li.collection-header > i.material-icons{
+  color:#4db6ac;
+}
+form { padding: 3px; position: fixed; bottom: 0; width: 100%; }
+
+
