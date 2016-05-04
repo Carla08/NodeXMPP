@@ -50,7 +50,7 @@ io.on('connection', function(socket){
   });
 
   socket.on("chatTo", function (to, msg){
-    xmpp.sendMessage(to,msg);
+    xmpp.chat(to,msg);
   });
 });
 
