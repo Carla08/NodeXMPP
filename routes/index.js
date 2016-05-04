@@ -22,6 +22,11 @@ router.get('/', function(req, res, next) {
     console.log('Yes, I\'m connected!');
     res.render('chat', { jid: data.jid });
   });
+
+  // logOff = function () {
+  //   req.app.locals.xmpp.disconnect();
+  // }
+  
 });
 
 router.post("/", function(req,res,next){

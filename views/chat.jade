@@ -21,10 +21,20 @@ block script
             $('#m').val('');
             return false;
         });
+        $('#addFriendButton').click(function (){
+            console.log("Add friend button clicked");
+            socket.emit('addFriend', "carla@cml.chi.itesm.mx");
+        });
+
+        $('#LogOff').click(function (){
+            console.log("log off clicked");
+            socket.emit('logOff');
+        });
         socket.on('chat message', function (msg) {
             $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
         });
         socket.on("contact", function (contacts){
             $("#contacts").append($('<li class="collection-item">').text(msg));
         });
+
 

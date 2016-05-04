@@ -42,6 +42,9 @@ module.exports ={
 		console.log("entered the send message");
 		var stanza = new Client.Stanza("message", {to: to, type: "chat"}).c("body").t(msg);
 		client.send(stanza);
+	}, logOff: function () {
+		console.log("Logged Off");
+		 
 	}
 
 };

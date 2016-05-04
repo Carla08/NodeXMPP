@@ -22,6 +22,8 @@ xmpp.on('chat', function(from, message) {
   io.emit("chat message",from+ 'echo: ' + message);
 });
 
+
+
 app.locals.users={};
 app.locals.sockets={};
 
@@ -50,8 +52,19 @@ io.on('connection', function(socket){
   });
 
   socket.on("chatTo", function (to, msg){
-    xmpp.sendMessage(to,msg);
+    xmpp.send(to,msg);
   });
+
+  socket.on("addFriend", function (friend){
+    xmpp.subscribe(friend);
+    console.log("Friend request to: " + friend);
+    xmpp.acceptSubscription(friend);
+  }); 
+  socket.on("logOff", function () {
+    console.log("Logging off...");
+    xmpp.disconnect();
+  });
+
 });
 
 
