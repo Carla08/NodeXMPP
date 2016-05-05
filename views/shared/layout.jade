@@ -2,9 +2,7 @@ doctype html
 html
   head
     title= "XMPP Chat Node.js"
-    link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
-    link(rel='stylesheet', href='/Materialize/dist/css/materialize.min.css')
-    link(rel="stylesheet", href="/stylesheets/style.css")
+    include css
   body
     header
       .navbar-fixed
@@ -19,7 +17,6 @@ html
       ul.side-nav.fixed.collection(id="contacts")
         li.collection-header.center-align
           span.material-icons.medium(style="font-size:4rem") contacts
-        li.collection-item Example
       a(href="#" data-activates="slide-out" class="button-collapse")
         i(class="mdi-navigation-menu")
 

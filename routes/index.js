@@ -3,16 +3,27 @@ var router = express.Router();
 
 
 //var user ="mario";
-var user ="mario";
+var user ="dave";
 //var password="ithe2ichi7osel";
-var password="mario";
+var password="dave";
 var domain="cml.chi.itesm.mx";
 var port = 5222;
 /* GET home page. */
 router.get('/', function(req, res, next) {
+
+  res.render("index", {});
+
+
+  // logOff = function () {
+  //   req.app.locals.xmpp.disconnect();
+  // }
+  
+});
+
+router.post("/", function(req,res,next){
   req.app.locals.xmpp.connect({
-    jid: user+"@"+domain,
-    password: password,
+    jid: req.body.username + "@" + domain,
+    password: req.body.password,
     host: domain,
     port: port
   });

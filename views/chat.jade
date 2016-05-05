@@ -5,12 +5,18 @@ block content
     .row
         ul.collection(id="messages")
     .row
-        form.col.s12
+        form.col.s12.chat
             textarea.col.s6(id="m" autocomplete="off")
             button.btn-large Send
     include addFriend
 block script
     script.
+        var contactTemplate=$("<li>").addClass("collection-item avatar");
+        var icon=$("<i>").addClass("material-icons circle").text("perm_identity");
+        var jid =$("<span>").addClass("title");
+        contactTemplate.append(icon);
+        contactTemplate.append(jid);
+
 
         var currentReceiver = "";
         $(".button-collapse").sideNav();
@@ -32,11 +38,9 @@ block script
         });
 
         socket.on("append", function (contact) {
-            console.log(contact)
-            var user = $("<li>");
-            user.addClass("collection-item ");
-            user.text(contact.jid + " state " + contact.state);
-            $("#contacts").append(user)
+            var contactBadge =contactTemplate.clone();
+            contactBadge.find("span.title").text(contact.jid)
+            $("#contacts").append(contactBadge)
         });
         socket.on('chat message', function (msg) {
             $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));

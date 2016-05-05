@@ -20,7 +20,6 @@ app.locals.sockets={};
 //var contacts_state = [];
 //This sends the request for contacts to the xmpp server.
 
-//This is for getting the contacts from the prescense stanza returned from getRoster()
 
 
 
@@ -43,7 +42,7 @@ io.on('connection', function(socket){
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
     //delete users[jid];
-    console.log('user disconnected');
+    console.log('User disconnected');
   });
 
   socket.on('chat message', function(msg){

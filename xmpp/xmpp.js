@@ -39,7 +39,7 @@ module.exports ={
 
 	},sendMessage:function (to, msg){
 		//while (logged === false) {;}
-		console.log("entered the send message");
+		console.log("Entered the send message");
 		var stanza = new Client.Stanza("message", {to: to, type: "chat"}).c("body").t(msg);
 		client.send(stanza);
 	}, logOff: function () {
