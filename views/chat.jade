@@ -9,6 +9,7 @@ block content
             textarea.col.s6(id="m" autocomplete="off")
             button.btn-large Send
     include addFriend
+    include friendRequest
 block script
     script.
         //Chat Template
@@ -21,6 +22,7 @@ block script
         var contactTemplate=$("<li>").addClass("collection-item avatar");
         var icon=$("<i>").addClass("material-icons circle").text("perm_identity");
         var jid =$("<span>").addClass("title");
+        var new_friend = "";
         contactTemplate.append(icon);
         contactTemplate.append(jid);
 
@@ -74,7 +76,16 @@ block script
         socket.on("contact", function (contacts) {
             $("#contacts").append($('<li class="collection-item">').text(msg));
         });
+        socket.on("showFriendRequest", function (contact){
+            new_friend = contact;
+            $("#friendRequestFrom").append("Friend request from: " + contact);
+            $('#friendRequest').openModal();
+        });
 
-
+        $("#acceptFriend").click(function () {
+            socket.emit("acceptFriend", new_friend);
+            new_friend = "";
+        });
+        
 
 

@@ -48,7 +48,7 @@ router.post("/", function(req,res,next){
 });
 
 router.get("/logoff" ,(req,res,next)=>{
-  xmpp.disconnect();
+  req.app.locals.xmpp.disconnect();
   res.send("You are fucking out!");
 
 });
