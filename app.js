@@ -19,7 +19,7 @@ app.locals.xmpp=xmpp;
 
 
 xmpp.on('chat', function(from, message) {
-  io.emit("chat message",from+ 'echo: ' + message);
+  io.emit("chat message", from + ' echo: ' + message);
 });
 
 
@@ -44,7 +44,7 @@ io.on('connection', function(socket){
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
     //delete users[jid];
-    console.log('user disconnected');
+    console.log('User disconnected');
   });
 
   socket.on('chat message', function(msg){

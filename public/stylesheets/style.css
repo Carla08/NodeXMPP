@@ -10,6 +10,6 @@ header, main, footer {
 li.collection-header > i.material-icons{
   color:#4db6ac;
 }
-form { padding: 3px; position: fixed; bottom: 0; width: 100%; }
+form.chat { padding: 3px; position: fixed; bottom: 0; width: 100%; }
 
 
