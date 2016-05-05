@@ -59,6 +59,10 @@ io.on('connection', function(socket){
     xmpp.acceptSubscription(friend);
   });
 
+  socket.on("acceptFriend", function (new_friend){
+    xmpp.acceptSubscription(new_friend);
+  });
+
   xmpp.on('stanza', function(stanza) {
     var contacts = [];
     if (stanza.attrs.id == 'roster_0') {

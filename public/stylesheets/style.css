@@ -20,3 +20,9 @@ ul.right.hide-on-med-and-down{
 .btn{
   margin-right: 2px;
 }
+
+#friendRequest {
+	max-width: 400px;
+	color: #FFF;
+	background-color: #555;
+}
