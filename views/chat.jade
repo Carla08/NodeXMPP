@@ -8,23 +8,43 @@ block content
         form.col.s12
             textarea.col.s6(id="m" autocomplete="off")
             button.btn-large Send
+    include addFriend
 block script
     script.
-        var currentReceiver="";
+
+        var currentReceiver = "";
         $(".button-collapse").sideNav();
         var socket = io();
-        //socket.emit("init","#{jid}");
+        socket.emit("init", "#{jid}");
+
+
         $('form').submit(function () {
             $('#messages').append($('<li class="collection-item right-align green lighten-4">').text($('#m').val()));
-            socket.emit('chatTo',"carla@cml.chi.itesm.mx" ,$('#m').val());
+            socket.emit('chatTo', "carla@cml.chi.itesm.mx", $('#m').val());
 
             $('#m').val('');
             return false;
         });
+
+        $("#addFriendButton").click(function () {
+            socket.emit("addFriend", $("#addFriendUser").val());
+            $("#addFriendUser").val("");
+        });
+
+        socket.on("append", function (contact) {
+            console.log(contact)
+            var user = $("<li>");
+            user.addClass("collection-item ");
+            user.text(contact.jid + " state " + contact.state);
+            $("#contacts").append(user)
+        });
         socket.on('chat message', function (msg) {
             $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
         });
-        socket.on("contact", function (contacts){
+        socket.on("contact", function (contacts) {
             $("#contacts").append($('<li class="collection-item">').text(msg));
         });
+
+
+
 

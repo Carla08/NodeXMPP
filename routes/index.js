@@ -20,7 +20,8 @@ router.get('/', function(req, res, next) {
   req.app.locals.xmpp.on('online', function(data) {
     console.log('Connected with JID: ' + data.jid.user);
     console.log('Yes, I\'m connected!');
-    res.render('chat', { jid: data.jid });
+    req.app.locals.xmpp.setPresence("chat");
+    res.render('chat', { jid: data.jid.user+"@"+data.jid._domain });
   });
 });
 
@@ -28,6 +29,12 @@ router.post("/", function(req,res,next){
   req.app.locals.xmpp.login(user,password, req.app.locals.io,(jid)=>{
     res.render('chat', { jid: jid });
   });
+});
+
+router.get("/logoff" ,(req,res,next)=>{
+  xmpp.disconnect();
+  res.send("You are fucking out!");
+
 });
 
 module.exports = router;

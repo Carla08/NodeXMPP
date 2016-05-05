@@ -10,32 +10,33 @@ var io = require('socket.io')(http);
 var xmpp = require('simple-xmpp');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
 app.locals.io=io;
 app.locals.xmpp=xmpp;
-
-
-
-
-
-xmpp.on('chat', function(from, message) {
-  io.emit("chat message",from+ 'echo: ' + message);
-});
-
 app.locals.users={};
 app.locals.sockets={};
 
+//XMPP MTHODS:
+
+//var contacts_state = [];
+//This sends the request for contacts to the xmpp server.
+
+//This is for getting the contacts from the prescense stanza returned from getRoster()
+
+
+
 io.on('connection', function(socket){
+
   var users={};
   var sockets={};
   socket.on("init", function (jid){
     if(!users[jid]){
-      users[jid]=socket.id;
-      sockets[socket.id]={
+      app.locals.users[jid]=socket.id;
+      app.locals.sockets[socket.id]={
         jid:jid,
         socket:socket
       }
     }
+    xmpp.getRoster();
   });
 
   socket.on('disconnect', function(){
@@ -50,19 +51,38 @@ io.on('connection', function(socket){
   });
 
   socket.on("chatTo", function (to, msg){
-    xmpp.chat(to,msg);
+
+    xmpp.send(to,msg);
+  });
+
+  socket.on("addFriend", function (friend){
+    xmpp.subscribe(friend);
+    xmpp.acceptSubscription(friend);
+  });
+
+  xmpp.on('stanza', function(stanza) {
+    var contacts = [];
+    if (stanza.attrs.id == 'roster_0') {
+      stanza.children[0].children.forEach(function(element, index) {
+        contacts.push(element.attrs.jid);
+      });
+      contacts.forEach(function (contact,index, array){
+        xmpp.probe(contact, function(state) {
+          var temp = {jid : contact, state: state };
+          socket.emit("append", temp);
+        });
+      });
+    }
+    if(stanza.is('presence') && stanza.attrs.type == "subscribe"){
+      //TO DO: SHOW FRIND REQUEST
+      socket.emit('showFriendRequest', stanza.attrs.from);
+    }
+  });
+
+  xmpp.on('chat', function(from, message) {
+    socket.emit("chat message",from+ 'echo: ' + message);
   });
 });
-
-
-
-
-
-
-
-
-
-
 
 
 

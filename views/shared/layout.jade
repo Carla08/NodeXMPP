@@ -10,10 +10,15 @@ html
       .navbar-fixed
         nav.top-nav.teal.lighten-2
           .nav-wrapper
-            a(href="#" class="brand-logo ") BEST XMPP Chat
-      ul.side-nav.fixed.collection.with-header(id="contacts")
-        li.collection-header.valign-wrapper
-          i.material-icons.medium.valign contacts
+            a.left(href="#" class="brand-logo ") BEST XMPP Chat
+            ul.right.hide-on-med-and-down
+              li
+                a.btn.red.lighten-1.modal-trigger(id="addFriendButton" href="#addFriend") Add Friend
+              li
+                a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat
+      ul.side-nav.fixed.collection(id="contacts")
+        li.collection-header.center-align
+          span.material-icons.medium(style="font-size:4rem") contacts
         li.collection-item Example
       a(href="#" data-activates="slide-out" class="button-collapse")
         i(class="mdi-navigation-menu")
@@ -26,3 +31,13 @@ html
     script(src="/Materialize/dist/js/materialize.min.js")
     script(src="https://cdn.socket.io/socket.io-1.4.5.js")
     block script
+    script.
+      $('.modal-trigger').leanModal({
+                dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                opacity: .5, // Opacity of modal background
+                in_duration: 300, // Transition in duration
+                out_duration: 200 // Transition out duration
+
+              }
+      );
+
