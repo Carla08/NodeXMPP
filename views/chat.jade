@@ -11,6 +11,13 @@ block content
     include addFriend
 block script
     script.
+        //Chat Template
+        var chatTemplate = $("<ul>").addClass("collection").attr("id","message");
+        var chatsByUser={};
+        var actualChattingUser;
+
+
+
         var contactTemplate=$("<li>").addClass("collection-item avatar");
         var icon=$("<i>").addClass("material-icons circle").text("perm_identity");
         var jid =$("<span>").addClass("title");
@@ -26,7 +33,7 @@ block script
 
         $('form').submit(function () {
             $('#messages').append($('<li class="collection-item right-align green lighten-4">').text($('#m').val()));
-            socket.emit('chatTo', "carla@cml.chi.itesm.mx", $('#m').val());
+            socket.emit('chatTo', actualChattingUser, $('#m').val());
 
             $('#m').val('');
             return false;
@@ -39,10 +46,29 @@ block script
 
         socket.on("append", function (contact) {
             var contactBadge =contactTemplate.clone();
-            contactBadge.find("span.title").text(contact.jid)
+            contactBadge.find("span.title").text(contact.jid.split("@")[0]);
+            contactBadge.attr("id", contact.jid);
+            contactBadge.find("i").addClass("green");
+            chatsByUser[contact.jid]=chatTemplate.clone();
+            contactBadge.click(function (event){
+                if (!actualChattingUser){
+                    actualChattingUser= event.target.id;
+                    $("#messages").append(chatsByUser[event.target.id].find("*"));
+                }else if (actualChattingUser !== event.target.id){
+                    var messagesInchat = $("#messages").find("*");
+                    chatsByUser[actualChattingUser].empty();
+                    chatsByUser[actualChattingUser].append(messagesInchat);
+
+                    $("#messages").empty();
+                    $("#messages").append(chatsByUser[event.target.id]);
+                    actualChattingUser= event.target.id;
+                }
+            });
+
             $("#contacts").append(contactBadge)
         });
-        socket.on('chat message', function (msg) {
+        socket.on('chat message', function (from,msg) {
+
             $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
         });
         socket.on("contact", function (contacts) {

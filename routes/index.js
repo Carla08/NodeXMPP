@@ -21,6 +21,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post("/", function(req,res,next){
+  res.cookie("jid",req.body.username + "@" + domain);
   req.app.locals.xmpp.connect({
     jid: req.body.username + "@" + domain,
     password: req.body.password,
@@ -29,10 +30,14 @@ router.post("/", function(req,res,next){
   });
 
   req.app.locals.xmpp.on('online', function(data) {
+
+    req.app.locals.req=req;
     console.log('Connected with JID: ' + data.jid.user);
     console.log('Yes, I\'m connected!');
     req.app.locals.xmpp.setPresence("chat");
+
     res.render('chat', { jid: data.jid.user+"@"+data.jid._domain });
+
   });
 });
 

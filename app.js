@@ -12,8 +12,11 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 app.locals.io=io;
 app.locals.xmpp=xmpp;
-app.locals.users={};
-app.locals.sockets={};
+
+var users={};
+var sockets={};
+app.locals.users=users;
+app.locals.sockets=sockets;
 
 //XMPP MTHODS:
 
@@ -25,8 +28,7 @@ app.locals.sockets={};
 
 io.on('connection', function(socket){
 
-  var users={};
-  var sockets={};
+
   socket.on("init", function (jid){
     if(!users[jid]){
       app.locals.users[jid]=socket.id;
@@ -50,7 +52,6 @@ io.on('connection', function(socket){
   });
 
   socket.on("chatTo", function (to, msg){
-
     xmpp.send(to,msg);
   });
 
@@ -79,8 +80,15 @@ io.on('connection', function(socket){
   });
 
   xmpp.on('chat', function(from, message) {
-    socket.emit("chat message",from+ 'echo: ' + message);
+    var socket= getSocket(app.locals.req.cookies.jid);
+
+    socket.emit("chat message", app.locals.req.cookies.jid,message);
   });
+
+  var getSocket = function (jid){
+    return sockets[users[jid]];
+
+  }
 });
 
 
@@ -103,7 +111,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 
 app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
