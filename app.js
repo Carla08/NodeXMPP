@@ -10,10 +10,16 @@ var io = require('socket.io')(http);
 var xmpp = require('simple-xmpp');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+
+var port = 5222;
+var domain="cml.chi.itesm.mx";
 app.locals.io=io;
 app.locals.xmpp=xmpp;
-app.locals.users={};
-app.locals.sockets={};
+
+var users={};
+var sockets={};
+app.locals.users=users;
+app.locals.sockets=sockets;
 
 //XMPP MTHODS:
 
@@ -25,17 +31,50 @@ app.locals.sockets={};
 
 io.on('connection', function(socket){
 
-  var users={};
-  var sockets={};
-  socket.on("init", function (jid){
-    if(!users[jid]){
-      app.locals.users[jid]=socket.id;
-      app.locals.sockets[socket.id]={
-        jid:jid,
-        socket:socket
+
+  socket.on("init", function (jid,password){
+    xmpp.connect({
+      jid: jid,
+      password: password,
+      host: domain,
+      port: port
+    });
+    xmpp.on('online', function(data) {
+      console.log('Connected with JID: ' + data.jid.user);
+      console.log('Yes, I\'m connected!');
+      if(!users[jid]){
+        app.locals.users[jid]=socket.id;
+        app.locals.sockets[socket.id]={
+          jid:jid,
+          socket:socket
+        };
+        xmpp.getRoster();
       }
-    }
-    xmpp.getRoster();
+      xmpp.setPresence("chat");
+
+    });
+
+
+    xmpp.on('stanza', function(stanza) {
+      var contacts = [];
+      if (stanza.attrs.id == 'roster_0' && users[app.locals.req.cookies.jid]) {
+        stanza.children[0].children.forEach(function(element, index) {
+          contacts.push(element.attrs.jid);
+        });
+        contacts.forEach(function (contact,index, array){
+          xmpp.probe(contact, function(state) {
+            var temp = {jid : contact, state: state };
+            var user= getSocket(app.locals.req.cookies.jid);
+            user.socket.emit("append", temp);
+          });
+        });
+      }
+      if(stanza.is('presence') && stanza.attrs.type === "subscribe" && users[app.locals.req.cookies.jid]){
+        //TO DO: SHOW FRIND REQUEST
+        var user= getSocket(app.locals.req.cookies.jid);
+        user.socket.emit('showFriendRequest', stanza.attrs.from);
+      }
+    });
   });
 
   socket.on('disconnect', function(){
@@ -50,12 +89,11 @@ io.on('connection', function(socket){
   });
 
   socket.on("chatTo", function (to, msg){
-
     xmpp.send(to,msg);
   });
 
   socket.on("addFriend", function (friend){
-    xmpp.subscribe(friend);
+    xmpp.subscribe(friend+"@"+domain);
     xmpp.acceptSubscription(friend);
   });
 
@@ -63,9 +101,10 @@ io.on('connection', function(socket){
     xmpp.acceptSubscription(new_friend);
   });
 
+
   xmpp.on('stanza', function(stanza) {
     //if(stanza.is('presence') && stanza.attrs.from ==  "test@conference.cml.chi.itesm.mx"){
-      console.log("STANZA from group TST: " + stanza); 
+      console.log("STANZA RCIVD: " + stanza); 
     //}
     var contacts = [];
     if (stanza.attrs.id == 'roster_0') {
@@ -86,7 +125,8 @@ io.on('connection', function(socket){
   });
 
   xmpp.on('chat', function(from, message) {
-    socket.emit("chat message",from+ 'echo: ' + message);
+    var user= getSocket(app.locals.req.cookies.jid);
+    user.socket.emit("chat message", app.locals.req.cookies.jid,message);
   });
 
   xmpp.on('groupchat', function(room, from, message) {
@@ -103,8 +143,7 @@ io.on('connection', function(socket){
       xmpp.invite(person_jid, room_name, message);
     });
   });
-  
-  //xmpp.invite("carla@cml.chi.itesm.mx", "test@conference.cml.chi.itesm.mx", "I kinda like you");
+
 });
 
 
@@ -127,7 +166,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 
 app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

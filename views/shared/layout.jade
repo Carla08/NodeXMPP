@@ -11,7 +11,7 @@ html
             a.left(href="#" class="brand-logo ") BEST XMPP Chat
             ul.right.hide-on-med-and-down
               li
-                a.btn.red.lighten-1.modal-trigger(id="addFriendButton" href="#addFriend") Add Friend
+                a.btn.red.lighten-1.modal-trigger( href="#addFriend") Add Friend
               li
                 a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat
               li
@@ -29,6 +29,7 @@ html
     script(src="/jquery/dist/jquery.min.js")
     script(src="/Materialize/dist/js/materialize.min.js")
     script(src="https://cdn.socket.io/socket.io-1.4.5.js")
+    //script(src="javascripts/app.js")
     block script
     script.
       $('.modal-trigger').leanModal({
