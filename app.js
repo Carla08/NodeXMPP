@@ -104,7 +104,7 @@ io.on('connection', function(socket){
 
   xmpp.on('stanza', function(stanza) {
     //if(stanza.is('presence') && stanza.attrs.from ==  "test@conference.cml.chi.itesm.mx"){
-      console.log("STANZA RCIVD: " + stanza); 
+      //console.log("STANZA RCIVD: " + stanza); 
     //}
     var contacts = [];
     if (stanza.attrs.id == 'roster_0') {
@@ -122,6 +122,24 @@ io.on('connection', function(socket){
       //TO DO: SHOW FRIND REQUEST
       socket.emit('showFriendRequest', stanza.attrs.from);
     }
+    /*
+     <message from="davians@conference.cml.chi.itesm.mx" to="carla@cml.chi.itesm.mx" type="normal" xmlns:stream="http://etherx.jabber.org/streams">
+       <x xmlns="http://jabber.org/protocol/muc#user">
+        <invite from="dave@cml.chi.itesm.mx/CITAs-iMac">
+          <reason>sup</reason>
+        </invite>
+        </x>
+        <x xmlns="jabber:x:conference" jid="davians@conference.cml.chi.itesm.mx">sup</x>
+       <body>dave@cml.chi.itesm.mx/CITAs-iMac invites you to the room davians@conference.cml.chi.itesm.mx (sup) </body>
+     </message>
+    */
+    if(stanza.is("message") && (stanza.attrs.from.indexOf("conference") != -1)) {
+      var group_name = stanza.attrs.from.split("@")[0];
+      var inviter = stanza.children[0].children[0].attrs.from.split("@")[0];
+      var message = stanza.children[0].children[0].getChild("reason").getText();
+      console.log("Group name: "+ group_name + " Inivter: " + inviter + "message: " + message);
+      socket.emit("showGroupMessage", group_name, inviter,message);
+    }
   });
 
   xmpp.on('chat', function(from, message) {
@@ -130,7 +148,7 @@ io.on('connection', function(socket){
   });
 
   xmpp.on('groupchat', function(room, from, message) {
-    socket.emit("chat message", room + " : " + from + " says: " + message);
+    socket.emit("groupchat", room, from, message);
   });
 
   socket.on ("createGroup", function (user_nick, group_name, members, message){
@@ -143,7 +161,9 @@ io.on('connection', function(socket){
       xmpp.invite(person_jid, room_name, message);
     });
   });
-
+  var getSocket = function (jid){
+    return sockets[users[jid]];
+  }
 });
 
 

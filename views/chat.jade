@@ -10,6 +10,8 @@ block content
             button.btn-large(type="submit") Send
     include addFriend
     include friendRequest
+    include createGroup
+    include groupRequest
 block script
     script.
         var socket = io();
@@ -25,6 +27,7 @@ block script
         var icon=$("<i>").addClass("material-icons circle").text("perm_identity");
         var jid =$("<span>").addClass("title");
         var new_friend = "";
+        var new_group = "";
         contactTemplate.append(icon);
         contactTemplate.append(jid);
 
@@ -47,8 +50,12 @@ block script
         $("#addFriendUser").val("");
         });
 
-        $("#createGroup").click(function () {
-            socket.emit("createGroup", "dave", "davians", "carla,mario", "Plz be my friends");
+        $("#createGroupButton").click(function () {
+            var nick = $("#userNick").val();
+            var group_name = $("#groupName").val();
+            var inviting_message = $("#inviteMessage").val();
+            var members = $("#members").val();
+           socket.emit("createGroup", nick, group_name, members, inviting_message);
         });
 
         socket.on("append", function (contact) {
@@ -81,6 +88,7 @@ block script
         socket.on("contact", function (contacts) {
         $("#contacts").append($('<li class="collection-item">').text(msg));
         });
+        
         socket.on("showFriendRequest", function (contact){
         new_friend = contact;
         $("#friendRequestFrom").append("Friend request from: " + contact);
@@ -90,6 +98,17 @@ block script
         $("#acceptFriend").click(function () {
             socket.emit("acceptFriend", new_friend);
         new_friend = "";
+        });
+
+        socket.on("showGroupMessage", function (groupName, inviter, message){
+        new_group = groupName;
+        $("#groupRequestFrom").append(inviter + " has invited you to join " + groupName + "<br>" + message);
+        $('#groupRequest').openModal();
+        });
+
+         $("#acceptGroup").click(function () {
+            socket.emit("acceptGroup", new_group);
+            new_group = "";
         });
 
 
