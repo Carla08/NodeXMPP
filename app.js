@@ -105,7 +105,7 @@ io.on('connection', function(socket){
 
   xmpp.on('chat', function(from, message) {
     var user= getSocket(app.locals.req.cookies.jid);
-    user.socket.emit("chat message", app.locals.req.cookies.jid,message);
+    user.socket.emit("chat message", from,message);
   });
 
   var getSocket = function (jid){

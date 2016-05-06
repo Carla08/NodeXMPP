@@ -7,7 +7,7 @@ block content
     .row
         form.col.s12.chat
             textarea.col.s6(id="m" autocomplete="off")
-            button.btn-large(type="submit") Send
+            button.btn-large.red.darken-1(type="submit") Send
     include addFriend
     include friendRequest
 block script
@@ -21,9 +21,10 @@ block script
 
 
 
-        var contactTemplate=$("<li>").addClass("collection-item avatar");
+        var contactTemplate=$("<li >").addClass("collection-item avatar hoverable animated fadeInLeft white");
         var icon=$("<i>").addClass("material-icons circle").text("perm_identity");
         var jid =$("<span>").addClass("title");
+        var messages=$("<p>").addClass("materialize-red-text");
         var new_friend = "";
         contactTemplate.append(icon);
         contactTemplate.append(jid);
@@ -48,31 +49,31 @@ block script
         });
 
         socket.on("append", function (contact) {
-            var contactBadge =contactTemplate.clone();
-            contactBadge.find("span.title").text(contact.jid.split("@")[0]);
-            contactBadge.attr("id", contact.jid);
-            contactBadge.find("i").addClass("green");
-            chatsByUser[contact.jid]=chatTemplate.clone();
-            contactBadge.click(function (event){
-                if (!actualChattingUser){
-                    actualChattingUser=  $(this).attr('id');
-                    $("#messages").append(chatsByUser[ $(this).attr('id')].find("*"));
-        }else if (actualChattingUser !==  $(this).attr('id')){
-        var messagesInchat = $("#messages").find("*");
-        chatsByUser[actualChattingUser].empty();
-            chatsByUser[actualChattingUser].append(messagesInchat);
-
-        $("#messages").empty();
-        $("#messages").append(chatsByUser[ $(this).attr('id')]);
-        actualChattingUser=  $(this).attr('id');
-        }
+            createBadge(contact)
         });
 
-        $("#contacts").append(contactBadge)
+        socket.on("groupchat", function (room, from, msg) {
+            if (chatsByUser[room]){
+                chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
+                        from+" says "+msg));
+            }else{
+                createBadge(room);
+                chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
+                        from + " says " + msg));
+            }
         });
+
         socket.on('chat message', function (from,msg) {
+        if (from===actualChattingUser){
+            $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
+        }else{
+            chatsByUser[from].append($('<li class="collection-item left-align green lighten-4">').text(msg));
+            $(document.getElementById(from)).removeClass("fadeInLeft");
+            $(document.getElementById(from)).addClass("animated infinite shake");
+        }
 
-        $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
+
+
         });
         socket.on("contact", function (contacts) {
         $("#contacts").append($('<li class="collection-item">').text(msg));
@@ -87,6 +88,34 @@ block script
             socket.emit("acceptFriend", new_friend);
         new_friend = "";
         });
+
+        function createBadge(badgeName){
+            var contactBadge = contactTemplate.clone();
+            contactBadge.find("span.title").text(badgeName.jid.split("@")[0]);
+            contactBadge.attr("id", badgeName.jid);
+            contactBadge.find("i").addClass("green");
+            chatsByUser[badgeName.jid] = chatTemplate.clone();
+            contactBadge.click(function (event) {
+                if (!actualChattingUser) {
+                    $(this).addClass("active");
+                    actualChattingUser = $(this).attr('id');
+                    $(this).removeClass("shake");
+                    $("#messages").append(chatsByUser[$(this).attr('id')].find("*"));
+                } else if (actualChattingUser !== $(this).attr('id')) {
+                    $(this).removeClass("shake");
+                    var messagesInchat = $("#messages").find("*");
+                    chatsByUser[actualChattingUser].empty();
+                    chatsByUser[actualChattingUser].append(messagesInchat);
+                    $("#contacts").find(".active").removeClass("active");
+                    $(this).addClass("active");
+                    $("#messages").empty();
+                    $("#messages").append(chatsByUser[$(this).attr('id')]);
+                    actualChattingUser = $(this).attr('id');
+                }
+
+            });
+            $("#contacts").append(contactBadge)
+        }
 
 
 

@@ -26,3 +26,17 @@ ul.right.hide-on-med-and-down{
 	color: #FFF;
 	background-color: #555;
 }
+
+
+.login{
+    margin-top: 6rem;
+    border-radius: 2px;
+}
+
+li.collection-item.avatar{
+    border-radius: 2px;
+    margin-top: 15px;
+}
+body,ul.side-nav.fixed.collection{
+    background-image: url("../images/congruent_pentagon.png");
+}
