@@ -7,11 +7,13 @@ block content
     .row
         form.col.s12.chat
             textarea.col.s6(id="m" autocomplete="off")
-            button.btn-large Send
+            button.btn-large(type="submit") Send
     include addFriend
     include friendRequest
 block script
     script.
+        var socket = io();
+        socket.emit("init", "#{jid}","#{password}");
         //Chat Template
         var chatTemplate = $("<ul>").addClass("collection").attr("id","message");
         var chatsByUser={};
@@ -29,21 +31,20 @@ block script
 
         var currentReceiver = "";
         $(".button-collapse").sideNav();
-        var socket = io();
-        socket.emit("init", "#{jid}");
+
+
 
 
         $('form').submit(function () {
-            $('#messages').append($('<li class="collection-item right-align green lighten-4">').text($('#m').val()));
+            $('#messages').append($('<li class="collection-item left-align green lighten-4">').text($('#m').val()));
             socket.emit('chatTo', actualChattingUser, $('#m').val());
-
             $('#m').val('');
             return false;
         });
 
         $("#addFriendButton").click(function () {
             socket.emit("addFriend", $("#addFriendUser").val());
-            $("#addFriendUser").val("");
+        $("#addFriendUser").val("");
         });
 
         socket.on("append", function (contact) {
@@ -54,38 +55,38 @@ block script
             chatsByUser[contact.jid]=chatTemplate.clone();
             contactBadge.click(function (event){
                 if (!actualChattingUser){
-                    actualChattingUser= event.target.id;
-                    $("#messages").append(chatsByUser[event.target.id].find("*"));
-                }else if (actualChattingUser !== event.target.id){
-                    var messagesInchat = $("#messages").find("*");
-                    chatsByUser[actualChattingUser].empty();
-                    chatsByUser[actualChattingUser].append(messagesInchat);
+                    actualChattingUser=  $(this).attr('id');
+                    $("#messages").append(chatsByUser[ $(this).attr('id')].find("*"));
+        }else if (actualChattingUser !==  $(this).attr('id')){
+        var messagesInchat = $("#messages").find("*");
+        chatsByUser[actualChattingUser].empty();
+            chatsByUser[actualChattingUser].append(messagesInchat);
 
-                    $("#messages").empty();
-                    $("#messages").append(chatsByUser[event.target.id]);
-                    actualChattingUser= event.target.id;
-                }
-            });
+        $("#messages").empty();
+        $("#messages").append(chatsByUser[ $(this).attr('id')]);
+        actualChattingUser=  $(this).attr('id');
+        }
+        });
 
-            $("#contacts").append(contactBadge)
+        $("#contacts").append(contactBadge)
         });
         socket.on('chat message', function (from,msg) {
 
-            $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
+        $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
         });
         socket.on("contact", function (contacts) {
-            $("#contacts").append($('<li class="collection-item">').text(msg));
+        $("#contacts").append($('<li class="collection-item">').text(msg));
         });
         socket.on("showFriendRequest", function (contact){
-            new_friend = contact;
-            $("#friendRequestFrom").append("Friend request from: " + contact);
-            $('#friendRequest').openModal();
+        new_friend = contact;
+        $("#friendRequestFrom").append("Friend request from: " + contact);
+        $('#friendRequest').openModal();
         });
 
         $("#acceptFriend").click(function () {
             socket.emit("acceptFriend", new_friend);
-            new_friend = "";
+        new_friend = "";
         });
-        
+
 
 
