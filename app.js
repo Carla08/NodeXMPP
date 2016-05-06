@@ -64,6 +64,9 @@ io.on('connection', function(socket){
   });
 
   xmpp.on('stanza', function(stanza) {
+    //if(stanza.is('presence') && stanza.attrs.from ==  "test@conference.cml.chi.itesm.mx"){
+      console.log("STANZA from group TST: " + stanza); 
+    //}
     var contacts = [];
     if (stanza.attrs.id == 'roster_0') {
       stanza.children[0].children.forEach(function(element, index) {
@@ -85,6 +88,23 @@ io.on('connection', function(socket){
   xmpp.on('chat', function(from, message) {
     socket.emit("chat message",from+ 'echo: ' + message);
   });
+
+  xmpp.on('groupchat', function(room, from, message) {
+    socket.emit("chat message", room + " : " + from + " says: " + message);
+  });
+
+  socket.on ("createGroup", function (user_nick, group_name, members, message){
+    var room_name = group_name + "@conference.cml.chi.itesm.mx";
+    var room_creator = room_name + "/" +user_nick;
+    xmpp.join(room_creator);
+    var people = members.split(",");
+    people.forEach(function (person, index, array){
+      var person_jid = person.replace(/ /g,'') + "@cml.chi.itesm.mx";
+      xmpp.invite(person_jid, room_name, message);
+    });
+  });
+  
+  //xmpp.invite("carla@cml.chi.itesm.mx", "test@conference.cml.chi.itesm.mx", "I kinda like you");
 });
 
 

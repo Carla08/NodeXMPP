@@ -39,6 +39,10 @@ block script
             $("#addFriendUser").val("");
         });
 
+        $("#createGroup").click(function () {
+            socket.emit("createGroup", "dave", "davians", "carla,mario", "Plz be my friends");
+        });
+
         socket.on("append", function (contact) {
             var contactBadge =contactTemplate.clone();
             contactBadge.find("span.title").text(contact.jid)
