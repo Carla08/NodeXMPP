@@ -10,6 +10,8 @@ block content
             button.btn-large.red.darken-1(type="submit") Send
     include addFriend
     include friendRequest
+    include createGroup
+    include groupRequest
 block script
     script.
         var socket = io();
@@ -26,6 +28,7 @@ block script
         var jid =$("<span>").addClass("title");
         var messages=$("<p>").addClass("materialize-red-text");
         var new_friend = "";
+        var new_group = "";
         contactTemplate.append(icon);
         contactTemplate.append(jid);
 
@@ -37,7 +40,7 @@ block script
 
 
         $('form').submit(function () {
-            $('#messages').append($('<li class="collection-item left-align green lighten-4">').text($('#m').val()));
+            $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text($('#m').val()));
             socket.emit('chatTo', actualChattingUser, $('#m').val());
             $('#m').val('');
             return false;
@@ -48,18 +51,39 @@ block script
         $("#addFriendUser").val("");
         });
 
+        $("#createGroupButton").click(function () {
+            var nick = $("#userNick").val();
+            var group_name = $("#groupName").val();
+            var inviting_message = $("#inviteMessage").val();
+            var members = $("#members").val();
+            createBadge({jid:group_name+"@conference.cml.chi.itesm.mx"});
+            $(document.getElementById(group_name+"@conference.cml.chi.itesm.mx")).find("i").text("supervisor_account");
+           socket.emit("createGroup", nick, group_name, members, inviting_message);
+        });
+
         socket.on("append", function (contact) {
             createBadge(contact)
         });
 
         socket.on("groupchat", function (room, from, msg) {
             if (chatsByUser[room]){
-                chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
-                        from+" says "+msg));
+                if(actualChattingUser===room){
+                    $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
+                }else{
+                    chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
+                            from + " says " + msg));
+                    $(document.getElementById(room)).removeClass("fadeInLeft");
+                    $(document.getElementById(room)).addClass("animated infinite shake");
+                }
+
             }else{
-                createBadge(room);
+                createBadge({jid:room});
+                $(document.getElementById(from)).find("i").text("supervisor_account");
                 chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
                         from + " says " + msg));
+                $(document.getElementById(room)).removeClass("fadeInLeft");
+                $(document.getElementById(room)).addClass("animated infinite shake");
+
             }
         });
 
@@ -78,6 +102,7 @@ block script
         socket.on("contact", function (contacts) {
         $("#contacts").append($('<li class="collection-item">').text(msg));
         });
+        
         socket.on("showFriendRequest", function (contact){
         new_friend = contact;
         $("#friendRequestFrom").append("Friend request from: " + contact);
@@ -89,6 +114,7 @@ block script
         new_friend = "";
         });
 
+
         function createBadge(badgeName){
             var contactBadge = contactTemplate.clone();
             contactBadge.find("span.title").text(badgeName.jid.split("@")[0]);
@@ -97,7 +123,7 @@ block script
             chatsByUser[badgeName.jid] = chatTemplate.clone();
             contactBadge.click(function (event) {
                 if (!actualChattingUser) {
-                    $(this).addClass("active");
+                    $(this).addClass("teal lighten-2");
                     actualChattingUser = $(this).attr('id');
                     $(this).removeClass("shake");
                     $("#messages").append(chatsByUser[$(this).attr('id')].find("*"));
@@ -106,8 +132,8 @@ block script
                     var messagesInchat = $("#messages").find("*");
                     chatsByUser[actualChattingUser].empty();
                     chatsByUser[actualChattingUser].append(messagesInchat);
-                    $("#contacts").find(".active").removeClass("active");
-                    $(this).addClass("active");
+                    $("#contacts").find(".teal.lighten-2").removeClass("teal lighten-2");
+                    $(this).addClass("teal lighten-2");
                     $("#messages").empty();
                     $("#messages").append(chatsByUser[$(this).attr('id')]);
                     actualChattingUser = $(this).attr('id');
@@ -116,6 +142,17 @@ block script
             });
             $("#contacts").append(contactBadge)
         }
+
+        socket.on("showGroupMessage", function (groupName, inviter, message){
+        new_group = groupName;
+        $("#groupRequestFrom").append(inviter + " has invited you to join " + groupName + "<br>" + message);
+        $('#groupRequest').openModal();
+        });
+
+         $("#acceptGroup").click(function () {
+            createBadge(new_group);
+             $(document.getElementById(new_group)).find("i").text("supervisor_account");
+        });
 
 
 

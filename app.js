@@ -69,10 +69,16 @@ io.on('connection', function(socket){
           });
         });
       }
-      if(stanza.is('presence') && stanza.attrs.type === "subscribe" && users[app.locals.req.cookies.jid]){
+      else if(stanza.is('presence') && stanza.attrs.type === "subscribe" && users[app.locals.req.cookies.jid]){
         //TO DO: SHOW FRIND REQUEST
         var user= getSocket(app.locals.req.cookies.jid);
         user.socket.emit('showFriendRequest', stanza.attrs.from);
+      }else if(stanza.is("message") && (stanza.attrs.from.indexOf("conference") != -1) && (stanza.attrs.type==="normal")) {
+        var group_name = stanza.attrs.from.split("@")[0];
+        var inviter = stanza.children[0].children[0].attrs.from.split("@")[0];
+        var message = stanza.children[0].children[0].getChild("reason").getText();
+        console.log("Group name: "+ group_name + " Inivter: " + inviter + "message: " + message);
+        socket.emit("showGroupMessage", group_name, inviter,message);
       }
     });
   });
@@ -102,15 +108,28 @@ io.on('connection', function(socket){
   });
 
 
-
   xmpp.on('chat', function(from, message) {
     var user= getSocket(app.locals.req.cookies.jid);
     user.socket.emit("chat message", from,message);
   });
 
+  xmpp.on('groupchat', function(room, from, message) {
+    socket.emit("groupchat", room, from, message);
+  });
+
+  socket.on ("createGroup", function (user_nick, group_name, members, message){
+
+    var room_name = group_name + "@conference.cml.chi.itesm.mx";
+    var room_creator = room_name + "/" +user_nick;
+    xmpp.join(room_creator);
+    var people = members.split(",");
+    people.forEach(function (person, index, array){
+      var person_jid = person.replace(/ /g,'') + "@cml.chi.itesm.mx";
+      xmpp.invite(person_jid, room_name, message);
+    });
+  });
   var getSocket = function (jid){
     return sockets[users[jid]];
-
   }
 });
 

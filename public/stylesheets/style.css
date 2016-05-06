@@ -21,12 +21,14 @@ ul.right.hide-on-med-and-down{
   margin-right: 2px;
 }
 
-#friendRequest {
+#friendRequest,
+#groupRequest {
 	max-width: 400px;
 	color: #FFF;
 	background-color: #555;
 }
 
+<<<<<<< HEAD
 
 .login{
     margin-top: 6rem;
@@ -40,3 +42,5 @@ li.collection-item.avatar{
 body,ul.side-nav.fixed.collection{
     background-image: url("../images/congruent_pentagon.png");
 }
+=======
+>>>>>>> 64d96b6037333ce0510764ac7652fe54dfa3bd70
