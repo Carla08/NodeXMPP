@@ -149,6 +149,26 @@ block script
         $('#groupRequest').openModal();
         });
 
+        socket.on("buddy", function(jid,status){
+            if(chatsByUser[jid]){
+                var userIcon=$(document.getElementById(jid)).find("i");
+                switch (status){
+                    case "offline":
+                        userIcon.removeClass("green orange");
+                        userIcon.addClass("grey");
+                        break;
+                    case "away":
+                        userIcon.removeClass("green grey");
+                        userIcon.addClass("orange");
+                        break;
+                    case "online":
+                        userIcon.removeClass("green grey");
+                        userIcon.addClass("green");
+                }
+            }else{
+                createBadge(jid);
+            }
+        });
          $("#acceptGroup").click(function () {
             createBadge(new_group);
              $(document.getElementById(new_group)).find("i").text("supervisor_account");
