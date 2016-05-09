@@ -6,8 +6,8 @@ block content
         ul.collection(id="messages")
     .row
         form.col.s12.chat
-            textarea.col.s6(id="m" autocomplete="off")
-            button.btn-large.red.darken-1(type="submit") Send
+            textarea.col.s7(id="m" autocomplete="off")
+            button.col.s3.offset-s1.btn-large.red.darken-1(type="submit") Send
     include addFriend
     include friendRequest
     include createGroup
@@ -62,7 +62,7 @@ block script
         });
 
         socket.on("append", function (contact) {
-            createBadge(contact)
+            createBadge({jid:contact})
         });
 
         socket.on("groupchat", function (room, from, msg) {
@@ -166,7 +166,7 @@ block script
                         userIcon.addClass("green");
                 }
             }else{
-                createBadge(jid);
+                createBadge({jid:jid});
             }
         });
          $("#acceptGroup").click(function () {
