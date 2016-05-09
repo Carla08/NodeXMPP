@@ -16,6 +16,12 @@ html
             a(href="#" class="brand-logo ") BEST XMPP Chat
             ul.right.hide-on-med-and-down
               li
+                .input-field
+                  input#search(type='search', required='')
+                  label(for='search')
+                    i.material-icons search
+                  i.material-icons close
+              li
                 a.btn.red.lighten-1.modal-trigger( href="#addFriend") Add Friend
               li
                 a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat

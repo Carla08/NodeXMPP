@@ -5,7 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var http = require('http').Server(app);
+var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var xmpp = require('simple-xmpp');
 var routes = require('./routes/index');
@@ -197,8 +197,9 @@ app.use(function(err, req, res, next) {
 
 
 
-http.listen(3000, function(){
+http.listen(process.env.PORT ||3000, function(){
   console.log('listening on *:3000');
 });
 
-module.exports = app;
+//module.exports = app;
+//
