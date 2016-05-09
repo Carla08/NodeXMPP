@@ -128,10 +128,12 @@ io.on('connection', function(socket){
       xmpp.invite(person_jid, room_name, message);
     });
   });
+
   var getSocket = function (jid){
     return sockets[users[jid]];
   }
 });
+
 
 
 
