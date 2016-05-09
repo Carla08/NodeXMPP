@@ -8,7 +8,10 @@ html
       .navbar-fixed
         nav.top-nav.teal.lighten-2
           .nav-wrapper
-            a.left(href="#" class="brand-logo ") BEST XMPP Chat
+            .container
+            a.button-collapse(href='#', data-activates='contacts')
+              i.material-icons menu
+            a(href="#" class="brand-logo ") BEST XMPP Chat
             ul.right.hide-on-med-and-down
               li
                 a.btn.red.lighten-1.modal-trigger( href="#addFriend") Add Friend
@@ -16,9 +19,22 @@ html
                 a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat
               li
                 a.btn.red.lighten-1.modal-trigger(href= "#createGroup") Create Group
+
+
       ul.side-nav.fixed.collection(id="contacts")
+        .hide-on-med-and-up
+          li
+            a.btn.red.lighten-1.modal-trigger( href="#addFriend") Add Friend
+          li
+            a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat
+          li
+            a.btn.red.lighten-1.modal-trigger(href= "#createGroup") Create Group
         li.collection-header.center-align.teal.lighten-5
           span.material-icons.small.teal-text.darken-1(style="font-size:4rem") contacts
+        a.button-collapse.left(href='', data-activates='contacts')
+
+
+        i.mdi-navigation-menu
       a(href="#" data-activates="slide-out" class="button-collapse")
         i(class="mdi-navigation-menu")
 
@@ -32,6 +48,7 @@ html
     //script(src="javascripts/app.js")
     block script
     script.
+      $(".button-collapse").sideNav();
       $('.modal-trigger').leanModal({
                 dismissible: true, // Modal can be dismissed by clicking outside of the modal
                 opacity: .5, // Opacity of modal background

@@ -31,8 +31,7 @@ app.locals.sockets=sockets;
 
 io.on('connection', function(socket){
 
-
-  socket.on("init", function (jid,password){
+  socket.on("init", function (jid,password,isMobile){
     xmpp.connect({
       jid: jid,
       password: password,
@@ -48,6 +47,9 @@ io.on('connection', function(socket){
           jid:jid,
           socket:socket
         };
+        if(isMobile){
+          socket.emit("mobileLogged")
+        }
         xmpp.getRoster();
       }
       xmpp.setPresence("chat");
