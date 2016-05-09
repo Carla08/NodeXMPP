@@ -31,8 +31,7 @@ app.locals.sockets=sockets;
 
 io.on('connection', function(socket){
 
-
-  socket.on("init", function (jid,password){
+  socket.on("init", function (jid,password,isMobile){
     xmpp.connect({
       jid: jid,
       password: password,
@@ -48,6 +47,9 @@ io.on('connection', function(socket){
           jid:jid,
           socket:socket
         };
+        if(isMobile){
+          socket.emit("mobileLogged")
+        }
         xmpp.getRoster();
       }
       xmpp.setPresence("chat");
@@ -107,6 +109,10 @@ io.on('connection', function(socket){
     xmpp.acceptSubscription(new_friend);
   });
 
+  xmpp.on('buddy', function(jid, state, statusText,resource) {
+    var user = getSocket(app.locals.req.cookies.jid);
+    user.socket.emit("buddy",jid,state);
+  });
 
   xmpp.on('chat', function(from, message) {
     var user= getSocket(app.locals.req.cookies.jid);

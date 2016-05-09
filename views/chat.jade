@@ -6,8 +6,8 @@ block content
         ul.collection(id="messages")
     .row
         form.col.s12.chat
-            textarea.col.s6(id="m" autocomplete="off")
-            button.btn-large.red.darken-1(type="submit") Send
+            textarea.col.s7(id="m" autocomplete="off")
+            button.col.s3.offset-s1.btn-large.red.darken-1(type="submit") Send
     include addFriend
     include friendRequest
     include createGroup
@@ -75,7 +75,7 @@ block script
         });
 
         socket.on("append", function (contact) {
-            createBadge(contact)
+            createBadge({jid:contact})
         });
 
         socket.on("groupchat", function (room, from, msg) {
@@ -171,6 +171,26 @@ block script
         $('#groupRequest').openModal();
         });
 
+        socket.on("buddy", function(jid,status){
+            if(chatsByUser[jid]){
+                var userIcon=$(document.getElementById(jid)).find("i");
+                switch (status){
+                    case "offline":
+                        userIcon.removeClass("green orange");
+                        userIcon.addClass("grey");
+                        break;
+                    case "away":
+                        userIcon.removeClass("green grey");
+                        userIcon.addClass("orange");
+                        break;
+                    case "online":
+                        userIcon.removeClass("green grey");
+                        userIcon.addClass("green");
+                }
+            }else{
+                createBadge({jid:jid});
+            }
+        });
          $("#acceptGroup").click(function () {
             createBadge(new_group);
              $(document.getElementById(new_group)).find("i").text("supervisor_account");
