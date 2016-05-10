@@ -12,11 +12,12 @@ var domain="cml.chi.itesm.mx";
 //var port = 5222;
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
+  req.app.locals.req=req;
+  req.app.locals.res=res;
   if (req.cookies.jid && req.cookies.password){
     res.render('chat', {
-      jid: req.body.username + "@" + domain,
-      password: req.body.password});
+      jid: req.cookies.jid,
+      password: req.cookies.password});
   }else{
     res.render("index",{});
   }

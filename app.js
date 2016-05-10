@@ -49,29 +49,32 @@ io.on('connection', function(socket){
         host: domain,
         port: port
       });
-      xmpp.on('online', function (data) {
-        console.log('Connected with JID: ' + data.jid.user);
-        console.log('Yes, I\'m connected!');
-        if (!users[jid]) {
-          app.locals.users[jid] = socket.id;
-          app.locals.sockets[socket.id] = {
-            jid: jid,
-            socket: socket
-          };
-          if (isMobile) {
-            socket.emit("mobileLogged")
-          }
-          xmpp.getRoster();
-        }
-        xmpp.setPresence("chat");
 
-      });
     }
+    xmpp.on('online', function (data) {
+      console.log('Connected with JID: ' + data.jid.user);
+      console.log('Yes, I\'m connected!');
+      if (!users[jid]) {
+        app.locals.users[jid] = socket.id;
+        app.locals.sockets[socket.id] = {
+          jid: jid,
+          socket: socket
+        };
+
+        if (isMobile) {
+          socket.emit("mobileLogged")
+        }
+
+      }
+      xmpp.getRoster();
+      xmpp.setPresence("chat");
+
+    });
 
 
     xmpp.on('stanza', function(stanza) {
       var contacts = [];
-      if (stanza.attrs.id == 'roster_0' && users[app.locals.req.cookies.jid]) {
+      if (stanza.attrs.id == 'roster_0' && app.locals.req && users[app.locals.req.cookies.jid]) {
         stanza.children[0].children.forEach(function(element, index) {
           contacts.push(element.attrs.jid);
         });
@@ -83,7 +86,7 @@ io.on('connection', function(socket){
           });
         });
       }
-      else if(stanza.is('presence') && stanza.attrs.type === "subscribe" && users[app.locals.req.cookies.jid]){
+      else if(stanza.is('presence') && stanza.attrs.type === "subscribe" && app.locals.req && users[app.locals.req.cookies.jid]){
         //TO DO: SHOW FRIND REQUEST
         var user= getSocket(app.locals.req.cookies.jid);
         user.socket.emit('showFriendRequest', stanza.attrs.from);
@@ -98,6 +101,10 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
+    if (app.locals.req){
+      users[app.locals.req.cookies.jid]=undefined;
+
+    }
     delete sockets[socket.id];
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
@@ -139,13 +146,19 @@ io.on('connection', function(socket){
   });
 
   xmpp.on('buddy', function(jid, state, statusText,resource) {
-    var user = getSocket(app.locals.req.cookies.jid);
-    user.socket.emit("buddy",jid,state);
+    if(app.locals.req && users.hasOwnProperty(app.locals.req.cookies.jid)){
+      var user = getSocket(app.locals.req.cookies.jid);
+      user.socket.emit("buddy",jid,state);
+    }
+
   });
 
   xmpp.on('chat', function(from, message) {
     var user= getSocket(app.locals.req.cookies.jid);
-    user.socket.emit("chat message", from,message);
+    if(user){
+      user.socket.emit("chat message", from,message);
+    }
+
   });
 
   xmpp.on('groupchat', function(room, from, message) {
