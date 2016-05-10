@@ -22,7 +22,8 @@ ul.right.hide-on-med-and-down{
 }
 
 #friendRequest,
-#groupRequest {
+#groupRequest,
+#setPresence {
 	max-width: 400px;
 	color: #FFF;
 	background-color: #555;

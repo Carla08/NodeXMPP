@@ -13,6 +13,7 @@ block content
     include createGroup
     include groupRequest
     include importantMsgs
+    include setPresence
 block script
     script.
         var socket = io();
@@ -78,6 +79,19 @@ block script
             });
         });
 
+        /* Methods for presence*/
+        $("#Online").click(function() {
+            socket.emit("setPresence", "online");
+        });
+
+        $("#Away").click(function() {
+            socket.emit("setPresence", "away");
+        });
+
+        $("#Offline").click(function() {
+            socket.emit("setPresence", "offline");
+        });
+        /**************************/
 
         $("#createGroupButton").click(function () {
             var nick = $("#userNick").val();
