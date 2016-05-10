@@ -43,14 +43,19 @@ block script
         var currentReceiver = "";
         $(".button-collapse").sideNav();
 
-
+        function saveLink(from, user, link){
+            ref.push({
+                from: from,
+                user: actual_user,
+                message: link
+            });
+        }
 
 
 
         $('form').submit(function () {
-            
             var msg = $("#m").val();
-            var message = $('<li class="collection-item left-align green lighten-4 right-align">').text($('#m').val());
+            var message = $('<li class="collection-item left-align green lighten-4 right-align">').text(msg);
             message.click(function () {
                  ref.push({
                     message : msg,
@@ -60,6 +65,12 @@ block script
                  $(this).removeClass("green lighten-4");
                  $(this).addClass("red lighten-2");
             });
+            if(msg.startsWith("http")){
+                saveLink(actual_user,actual_user,msg);
+                message.removeClass("green lighten-4");
+                message.addClass("teal lighten-2");
+                message.addClass("white-text")
+            }
             $('#messages').append(message);
 
             socket.emit('chatTo', actualChattingUser, $('#m').val());
@@ -114,15 +125,22 @@ block script
         });
 
         socket.on("groupchat", function (room, from, msg) {
+            var message = $('<li class="collection-item left-align green hoverable lighten-4">');
+            if(msg.startsWith("http")){
+                saveLink(actual_user,actual_user,msg);
+                message.removeClass("green lighten-4");
+                message.addClass("teal lighten-2");
+                message.addClass("white-text")
+            }
             if (chatsByUser[room]){
                 if(actualChattingUser===room){
-                    $('#messages').append($('<li class="collection-item left-align green lighten-4">').text(msg));
+                    $('#messages').append(message.text(msg));
                 }else{
-                    chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
-                            from + " says " + msg));
+                    chatsByUser[room].append(message).text( from + " says " + msg);
                     $(document.getElementById(room)).removeClass("fadeInLeft");
                     $(document.getElementById(room)).addClass("animated infinite shake");
                 }
+
 
             }else{
                 createBadge({jid:room});
@@ -133,6 +151,15 @@ block script
                 $(document.getElementById(room)).addClass("animated infinite shake");
 
             }
+            message.click(function () {
+                 ref.push({
+                    message : msg,
+                    from: room,
+                    user: actual_user
+                 });
+                 $(this).removeClass("green lighten-4");
+                 $(this).addClass("red lighten-2");
+             });
         });
 
         socket.on('chat message', function (from,msg) {
@@ -146,6 +173,12 @@ block script
                  $(this).removeClass("green lighten-4");
                  $(this).addClass("red lighten-2");
             });
+            if(msg.startsWith("http")){
+                saveLink(actual_user,actual_user,msg);
+                message.removeClass("green lighten-4");
+                message.addClass("teal lighten-2");
+                message.addClass("white-text")
+            }
         if (from===actualChattingUser){
             $('#messages').append(message);
         }else{
