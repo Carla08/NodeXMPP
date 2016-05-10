@@ -117,6 +117,21 @@ io.on('connection', function(socket){
     xmpp.acceptSubscription(new_friend);
   });
 
+  socket.on("setPresence", function(presence) {
+    switch (presence) {
+      case "online" :
+        xmpp.setPresence('online', 'Free to chat');
+        break;
+      case "away" :
+        xmpp.setPresence('away', 'Not quite here');
+        break;
+      case "offline" :
+        xmpp.setPresence('offline', 'Not here');
+        break;
+    }
+    console.log("User presence: " + presence);
+  });
+
   xmpp.on('buddy', function(jid, state, statusText,resource) {
     var user = getSocket(app.locals.req.cookies.jid);
     user.socket.emit("buddy",jid,state);
@@ -142,10 +157,12 @@ io.on('connection', function(socket){
       xmpp.invite(person_jid, room_name, message);
     });
   });
+
   var getSocket = function (jid){
     return sockets[users[jid]];
   }
 });
+
 
 
 
