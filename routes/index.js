@@ -13,7 +13,7 @@ var domain="cml.chi.itesm.mx";
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  if (req.cookies.hasOwnProperty("jid") && req.cookies.hasOwnProperty("password")){
+  if (req.cookies.jid && req.cookies.password){
     res.render('chat', {
       jid: req.body.username + "@" + domain,
       password: req.body.password});
