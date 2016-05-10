@@ -58,8 +58,16 @@ router.post("/files/:user" ,(req,res,next)=>{
 });
 
 router.get("/files/:filename" ,(req,res,next)=>{
+  var imageRegEx=/\.(jpg|gif|png)$/;
+  var filename=req.params.filename;
   var file = __dirname + '/files/'+req.params.filename;
-  res.download(file); // Set
+  if (imageRegEx.test(filename)){
+    res.sendFile(file)
+  }else{
+    res.download(file);
+  }
+
+  // Set
 });
 
 module.exports = router;
