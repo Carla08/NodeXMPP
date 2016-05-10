@@ -13,16 +13,11 @@ var domain="cml.chi.itesm.mx";
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  if (req.cookies.hasOwnProperty("jid") && req.cookies.hasOwnProperty("password"){
-
-  })
-  res.render("index", {});
-
-
-  // logOff = function () {
-  //   req.app.locals.xmpp.disconnect();
-  // }
-  
+  if (req.cookies.hasOwnProperty("jid") && req.cookies.hasOwnProperty("password")){
+    res.render('chat', {
+      jid: req.body.username + "@" + domain,
+      password: req.body.password});
+    }
 });
 
 router.post("/", function(req,res,next){
@@ -41,6 +36,7 @@ router.get("/logoff" ,(req,res,next)=>{
   delete req.app.locals.users[jid];
   res.clearCookie("jid");
   res.clearCookie("password");
+  xmpp.disconnect();
   res.redirect("/");
 });
 

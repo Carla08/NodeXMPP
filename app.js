@@ -89,10 +89,14 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
+    if (app.locals.req.cookies.hasOwnProperty("jid") && app.locals.req.cookies.hasOwnProperty("password")){
+      delete users[app.locals.req.cookies.jid];
+    }
+    delete sockets[socket.id];
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
     //delete users[jid];
-    xmpp.disconnect();
+
     console.log('User disconnected');
   });
 
