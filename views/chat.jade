@@ -214,4 +214,20 @@ block script
         });
 
 
+        $("#searchContact").keyup(function(){
+            var searchString=$(this).val();
+            if (searchString !== ""){
+                $("li.collection-item.avatar").each(function (){
+                    if (!$(this).find("span").text().startsWith(searchString)){
+                        $(this).addClass("hide");
+                    }
+                });
+            }else{
+                $("li.collection-item.avatar.hide").each(function(){
+                    $(this).toggleClass("hide");
+                });
+            }
+        });
+
+
 
