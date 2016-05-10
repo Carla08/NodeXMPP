@@ -39,7 +39,7 @@ router.get("/logoff" ,(req,res,next)=>{
   delete req.app.locals.users[jid];
   res.clearCookie("jid");
   res.clearCookie("password");
-  xmpp.disconnect();
+  req.app.locals.xmpp.disconnect();
   res.redirect("/");
 });
 
