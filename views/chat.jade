@@ -12,6 +12,7 @@ block content
     include friendRequest
     include createGroup
     include groupRequest
+    include importantMsgs
 block script
     script.
         var socket = io();
@@ -21,7 +22,7 @@ block script
         var chatTemplate = $("<ul>").addClass("collection").attr("id","message");
         var chatsByUser={};
         var actualChattingUser;
-
+        var ref = new Firebase('https://importantmsgs.firebaseio.com/');
 
 
         var contactTemplate=$("<li >").addClass("collection-item avatar hoverable animated fadeInLeft white");
@@ -41,7 +42,7 @@ block script
 
 
         $('form').submit(function () {
-            var ref = new Firebase('https://importantmsgs.firebaseio.com/');
+            
             var msg = $("#m").val();
             var message = $('<li class="collection-item left-align green lighten-4 right-align">').text($('#m').val());
             message.click(function () {
@@ -63,6 +64,20 @@ block script
             socket.emit("addFriend", $("#addFriendUser").val());
             $("#addFriendUser").val("");
         });
+
+        $("#showImportantsButton").click(function () {
+            var modal = $("#msgs");
+            ref.orderByChild("user").equalTo(actual_user).on("value", function(snapshot) {
+                var msg_array = snapshot.val();
+                for (var property in msg_array){
+                    if(msg_array.hasOwnProperty(property)){
+                        modal.append("<p><strong>" + msg_array[property].from + "</strong> said: " + msg_array[property].message);
+                       //console.log(msg_array[property].from) 
+                    }
+                }
+            });
+        });
+
 
         $("#createGroupButton").click(function () {
             var nick = $("#userNick").val();
@@ -101,7 +116,6 @@ block script
         });
 
         socket.on('chat message', function (from,msg) {
-            var ref = new Firebase('https://importantmsgs.firebaseio.com/');
             var message = $('<li class="collection-item left-align green hoverable lighten-4">').text(msg);
             message.click(function () {
                  ref.push({
@@ -109,6 +123,8 @@ block script
                     from: from,
                     user: actual_user
                  });
+                 $(this).removeClass("green lighten-4");
+                 $(this).addClass("red lighten-2");
             });
         if (from===actualChattingUser){
             $('#messages').append(message);
