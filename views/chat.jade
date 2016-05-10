@@ -46,10 +46,7 @@ block script
 
 
 
-<<<<<<< HEAD
-        $('form.chat').submit(function () {
-            $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text($('#m').val()));
-=======
+
         $('form').submit(function () {
             
             var msg = $("#m").val();
@@ -64,7 +61,7 @@ block script
                  $(this).addClass("red lighten-2");
             });
             $('#messages').append(message);
->>>>>>> 65c7af8399b723fbd0c4cd774f0a744333e6e376
+
             socket.emit('chatTo', actualChattingUser, $('#m').val());
             $('#m').val('');
             return false;

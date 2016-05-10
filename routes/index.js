@@ -17,7 +17,10 @@ router.get('/', function(req, res, next) {
     res.render('chat', {
       jid: req.body.username + "@" + domain,
       password: req.body.password});
-    }
+  }else{
+    res.render("index",{});
+  }
+
 });
 
 router.post("/", function(req,res,next){

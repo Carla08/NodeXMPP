@@ -34,30 +34,39 @@ app.locals.sockets=sockets;
 io.on('connection', function(socket){
 
   socket.on("init", function (jid,password,isMobile){
-
-    xmpp.connect({
-      jid: jid,
-      password: password,
-      host: domain,
-      port: port
-    });
-    xmpp.on('online', function(data) {
-      console.log('Connected with JID: ' + data.jid.user);
-      console.log('Yes, I\'m connected!');
-      if(!users[jid]){
-        app.locals.users[jid]=socket.id;
-        app.locals.sockets[socket.id]={
-          jid:jid,
-          socket:socket
-        };
-        if(isMobile){
-          socket.emit("mobileLogged")
-        }
-        xmpp.getRoster();
-      }
+    if (users.hasOwnProperty(jid)){
+      app.locals.users[jid] = socket.id;
+      app.locals.sockets[socket.id] = {
+        jid: jid,
+        socket: socket
+      };
+      xmpp.getRoster();
       xmpp.setPresence("chat");
+    }else {
+      xmpp.connect({
+        jid: jid,
+        password: password,
+        host: domain,
+        port: port
+      });
+      xmpp.on('online', function (data) {
+        console.log('Connected with JID: ' + data.jid.user);
+        console.log('Yes, I\'m connected!');
+        if (!users[jid]) {
+          app.locals.users[jid] = socket.id;
+          app.locals.sockets[socket.id] = {
+            jid: jid,
+            socket: socket
+          };
+          if (isMobile) {
+            socket.emit("mobileLogged")
+          }
+          xmpp.getRoster();
+        }
+        xmpp.setPresence("chat");
 
-    });
+      });
+    }
 
 
     xmpp.on('stanza', function(stanza) {
@@ -89,9 +98,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    if (app.locals.req.cookies.hasOwnProperty("jid") && app.locals.req.cookies.hasOwnProperty("password")){
-      delete users[app.locals.req.cookies.jid];
-    }
     delete sockets[socket.id];
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
