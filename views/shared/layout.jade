@@ -11,31 +11,34 @@ html
       .navbar-fixed
         nav.top-nav.teal.lighten-2
           .nav-wrapper
+
             .container
             a.button-collapse(href='#', data-activates='contacts')
               i.material-icons menu
             a(href="#" class="brand-logo ") BEST XMPP Chat
-            ul.right.hide-on-med-and-down
+            ul.right.show-on-small.show-on-medium-and-up.margin-right
               li
-                a.btn.red.lighten-1.modal-trigger( href="#addFriend") Add Friend
+                a.dropdown-button(href='#!', data-activates='options')
+                  i.material-icons.right settings
+            ul#options.dropdown-content
               li
-                a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat
+                a.modal-trigger( href="#addFriend") Add Friend
+              li.divider
               li
-                a.btn.red.lighten-1.modal-trigger(href= "#createGroup") Create Group
+                a(id="LogOff" href="/logoff") Close Chat
+              li.divider
               li
-                a.btn.red.lighten-1.modal-trigger(id="showImportantsButton" href= "#importantMsgs") Important Msgs
+                a.modal-trigger(href= "#createGroup") Create Group
+              li.divider
               li
-                a.btn.red.lighten-1.modal-trigger( href= "#setPresence") Set Presence
+                a.modal-trigger(id="showImportantsButton" href= "#importantMsgs") Important Msgs
+              li.divider
+              li
+                a.modal-trigger( href= "#setPresence") Set Presence
+
 
 
       ul.side-nav.fixed.collection(id="contacts")
-        .hide-on-med-and-up
-          li
-            a.btn.red.lighten-1.modal-trigger( href="#addFriend") Add Friend
-          li
-            a.btn.red.lighten-1(id="LogOff" href="/logoff") Close Chat
-          li
-            a.btn.red.lighten-1.modal-trigger(href= "#createGroup") Create Group
         li
           .input-field
             input#search(type='searchContact', required='')
@@ -49,9 +52,8 @@ html
 
 
     main
-      .container
-        .section
-          block content
+
+      block content
     script(src="/jquery/dist/jquery.min.js")
     script(src="/Materialize/dist/js/materialize.min.js")
     script(src="https://cdn.socket.io/socket.io-1.4.5.js")

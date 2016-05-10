@@ -2,11 +2,10 @@ header, main, footer {
   padding-left: 240px;
 }
 
-@media only screen and (max-width : 992px) {
-  header, main, footer {
-    padding-left: 0;
-  }
+.margin-right{
+    margin-right:240px;
 }
+
 li.collection-header > span.material-icons{
   color:#4db6ac;
 }
@@ -15,6 +14,7 @@ form.chat { padding: 3px; position: fixed; bottom: 0; width: 100%; }
 ul.right.hide-on-med-and-down{
   margin-right:240px;
 }
+
 
 
 .btn{
@@ -46,5 +46,16 @@ body,ul.side-nav.fixed.collection{
 
 .input-field input[type=search]{
     border-radius: 3px;
+
+}
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+        padding-left: 0;
+    }
+
+    .margin-right{
+        margin-right:0px;
+    }
 
 }
