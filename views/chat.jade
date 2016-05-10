@@ -6,14 +6,18 @@ block content
         ul.collection(id="messages")
     .row
         form.col.s12.chat
-            textarea.col.s7(id="m" autocomplete="off")
-            button.col.s3.offset-s1.btn-large.red.darken-1(type="submit") Send
+            textarea.col.s6(id="m" autocomplete="off")
+            button.col.s2.btn-large.red.darken-1(type="submit") Send
+            a.btn-floating.btn-large.waves-effect.waves-light.red.modal-trigger.modal-close(href="#uploadFile")
+                i.material-icons attach_file
     include addFriend
     include friendRequest
     include createGroup
     include groupRequest
 block script
     script.
+        var domain="http://localhost:3000"
+        var user="#{jid}";
         var socket = io();
         socket.emit("init", "#{jid}","#{password}");
         //Chat Template
@@ -39,7 +43,7 @@ block script
 
 
 
-        $('form').submit(function () {
+        $('form.chat').submit(function () {
             $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text($('#m').val()));
             socket.emit('chatTo', actualChattingUser, $('#m').val());
             $('#m').val('');
@@ -162,7 +166,7 @@ block script
                         userIcon.addClass("orange");
                         break;
                     case "online":
-                        userIcon.removeClass("green grey");
+                        userIcon.removeClass("orange grey");
                         userIcon.addClass("green");
                 }
             }else{
@@ -188,6 +192,25 @@ block script
                     $(this).toggleClass("hide");
                 });
             }
+        });
+
+        $("form#file").submit(function (event){
+            var formData= new FormData($("form#file")[0]);
+            $.ajax({
+                type: "POST",
+                url: "/files/"+user,
+                data:formData,
+                success: function (data){
+                    var url = domain+data;
+                    var link=$("<a>").addClass("btn waves-effect").attr("href",url);
+                    $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text(url));
+                    socket.emit('chatTo', actualChattingUser, url);
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+            event.preventDefault();
         });
 
 

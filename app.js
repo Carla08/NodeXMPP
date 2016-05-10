@@ -10,6 +10,8 @@ var io = require('socket.io')(http);
 var xmpp = require('simple-xmpp');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var busboy = require('connect-busboy');
+app.use(busboy());
 
 var port = 5222;
 var domain="cml.chi.itesm.mx";
@@ -32,6 +34,7 @@ app.locals.sockets=sockets;
 io.on('connection', function(socket){
 
   socket.on("init", function (jid,password,isMobile){
+
     xmpp.connect({
       jid: jid,
       password: password,
@@ -89,6 +92,7 @@ io.on('connection', function(socket){
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
     //delete users[jid];
+    xmpp.disconnect();
     console.log('User disconnected');
   });
 

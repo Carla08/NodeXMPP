@@ -1,0 +1,16 @@
+//
+   Created by mario on 5/9/2016.
+div(id="uploadFile" class="modal")
+    div(class="modal-content")
+        .row
+            form( id="file" action="/file/" method="post" enctype="multipart/form-data" class="col s12")
+                h5 File
+                .row
+                    .file-field.input-field
+                        .btn
+                            span File
+                            input(type="file" name="file")
+                        .file-path-wrapper
+                            input.file-path.validate(type="text")
+                button(class="btn waves-effect waves-light" type="submit" name="action") Upload
+                    i(class="material-icons right") send
