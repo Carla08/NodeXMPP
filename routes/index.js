@@ -31,7 +31,11 @@ router.post("/", function(req,res,next){
   req.app.locals.req=req;
   res.render('chat', {
     jid: req.body.username + "@" + domain,
-    password: req.body.password});
+    password: req.body.password,
+    host: req.body.host,
+    domain: req.body.domain,
+    port: req.body.port
+  });
   }
 );
 
