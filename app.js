@@ -11,6 +11,7 @@ var xmpp = require('simple-xmpp');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var busboy = require('connect-busboy');
+var lastmessage="";
 app.use(busboy());
 
 var port = 5222;
@@ -34,9 +35,11 @@ app.locals.sockets=sockets;
 io.on('connection', function(socket){
 
   socket.on("init", function (jid,password,custom_host, custom_domain, custom_port){
+    domain = custom_host || custom_domain || domain;
+    port = custom_port || port;
     if (users.hasOwnProperty(jid)){
-      app.locals.users[jid] = socket.id;
-      app.locals.sockets[socket.id] = {
+      users[jid] = socket.id;
+      sockets[socket.id] = {
         jid: jid,
         socket: socket,
         credentials:true
@@ -44,8 +47,7 @@ io.on('connection', function(socket){
       xmpp.getRoster();
       xmpp.setPresence("chat");
     }else {
-      domain = custom_host || custom_domain || domain;
-      port = custom_port || port;
+
       xmpp.connect({
         jid: jid,
         password: password,
@@ -118,7 +120,12 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
   socket.on("chatTo", function (to, msg){
-    xmpp.send(to,msg);
+    if (to.search("conference")!== -1){
+      xmpp.send(to,msg,true);
+    }else{
+      xmpp.send(to,msg);
+    }
+
   });
   socket.on("addFriend", function (friend){
     xmpp.subscribe(friend+"@"+domain);
@@ -142,28 +149,31 @@ io.on('connection', function(socket){
     console.log("User presence: " + presence);
   });
   xmpp.on('buddy', function(jid, state, statusText,resource) {
-    if(app.locals.req && users.hasOwnProperty(app.locals.req.cookies.jid)){
       var user = getSocket(app.locals.req.cookies.jid);
-      user.socket.emit("buddy",jid,state);
-    }
+      if (user) user.socket.emit("buddy",jid,state);
+
   });
   xmpp.on('chat', function(from, message) {
-    var user= getSocket(app.locals.req.cookies.jid);
-    if(user){
-      user.socket.emit("chat message", from,message);
+    if(lastmessage!== (from+message)){
+      lastmessage=from+message;
+      var user= getSocket(app.locals.req.cookies.jid);
+      if(user){
+        user.socket.emit("chat message", from,message);
+      }
     }
+
   });
   xmpp.on('groupchat', function(room, from, message) {
     socket.emit("groupchat", room, from, message);
   });
-  socket.on ("createGroup", function (user_nick, group_name, members, message){
+  socket.on ("createGroup", function (jid,user_nick, group_name, members, message){
 
-    var room_name = group_name + "@conference."+app.locals.cookies.jid.split("@")[1];
+    var room_name = group_name + "@conference."+jid.split("@")[1];
     var room_creator = room_name + "/" +user_nick;
     xmpp.join(room_creator);
     var people = members.split(",");
     people.forEach(function (person, index, array){
-      var person_jid = person.replace(/ /g,'') + "@"+app.locals.cookies.jid.split("@")[1];
+      var person_jid = person.replace(/ /g,'') + "@"+jid.split("@")[1];
       xmpp.invite(person_jid, room_name, message);
     });
   });

@@ -118,7 +118,7 @@ block script
             var members = $("#members").val();
             createBadge({jid:group_name+"@conference.#{domain}"});
             $(document.getElementById(group_name+"@conference.#{domain}")).find("i").text("supervisor_account");
-           socket.emit("createGroup", nick, group_name, members, inviting_message);
+           socket.emit("createGroup",user, nick, group_name, members, inviting_message);
         });
 
         socket.on("append", function (contact) {
