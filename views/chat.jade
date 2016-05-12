@@ -294,6 +294,7 @@ block script
                     var link=$("<a>").addClass("btn waves-effect").attr("href",url);
                     $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text(url));
                     socket.emit('chatTo', actualChattingUser, url);
+                    saveLink(actual_user,actual_user,url);
                 },
                 cache: false,
                 contentType: false,
