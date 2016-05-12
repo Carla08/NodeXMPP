@@ -116,8 +116,8 @@ block script
             var group_name = $("#groupName").val();
             var inviting_message = $("#inviteMessage").val();
             var members = $("#members").val();
-            createBadge({jid:group_name+"@conference.cml.chi.itesm.mx"});
-            $(document.getElementById(group_name+"@conference.cml.chi.itesm.mx")).find("i").text("supervisor_account");
+            createBadge({jid:group_name+"@conference.#{domain}"});
+            $(document.getElementById(group_name+"@conference.#{domain}")).find("i").text("supervisor_account");
            socket.emit("createGroup", nick, group_name, members, inviting_message);
         });
 

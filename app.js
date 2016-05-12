@@ -158,12 +158,12 @@ io.on('connection', function(socket){
   });
   socket.on ("createGroup", function (user_nick, group_name, members, message){
 
-    var room_name = group_name + "@conference.cml.chi.itesm.mx";
+    var room_name = group_name + "@conference.cml."+app.locals.cookies.jid.split("@")[1];
     var room_creator = room_name + "/" +user_nick;
     xmpp.join(room_creator);
     var people = members.split(",");
     people.forEach(function (person, index, array){
-      var person_jid = person.replace(/ /g,'') + "@cml.chi.itesm.mx";
+      var person_jid = person.replace(/ /g,'') + "@cml."+app.locals.cookies.jid.split("@")[1];
       xmpp.invite(person_jid, room_name, message);
     });
   });
