@@ -1,0 +1,118 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@2.14.7
+3 info using node@v4.2.2
+4 verbose readDependencies loading dependencies from C:\Users\mario\Desktop\NodeXMPP\package.json
+5 verbose install where, deps [ 'C:\\Users\\mario\\Desktop\\NodeXMPP',
+5 verbose install   [ 'body-parser',
+5 verbose install     'bower',
+5 verbose install     'connect-busboy',
+5 verbose install     'cookie-parser',
+5 verbose install     'debug',
+5 verbose install     'express',
+5 verbose install     'jade',
+5 verbose install     'morgan',
+5 verbose install     'node-xmpp-client',
+5 verbose install     'serve-favicon',
+5 verbose install     'simple-xmpp',
+5 verbose install     'socket.io' ] ]
+6 verbose install where, peers [ 'C:\\Users\\mario\\Desktop\\NodeXMPP', [] ]
+7 verbose installManyTop reading for lifecycle C:\Users\mario\Desktop\NodeXMPP\package.json
+8 info preinstall NodeXMPP@0.0.0
+9 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\body-parser\package.json
+10 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\bower\package.json
+11 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\connect-busboy\package.json
+12 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\cookie-parser\package.json
+13 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\debug\package.json
+14 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\express\package.json
+15 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\jade\package.json
+16 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\morgan\package.json
+17 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\node-xmpp-client\package.json
+18 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\serve-favicon\package.json
+19 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\simple-xmpp\package.json
+20 verbose installManyTop reading scoped package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\socket.io\package.json
+21 info package.json connect-busboy@0.0.2 No license field.
+22 info package.json simple-xmpp@1.3.0 No license field.
+23 verbose readDependencies loading dependencies from C:\Users\mario\Desktop\NodeXMPP\package.json
+24 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\body-parser\package.json
+25 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\bower\package.json
+26 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\connect-busboy\package.json
+27 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\cookie-parser\package.json
+28 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\debug\package.json
+29 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\express\package.json
+30 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\jade\package.json
+31 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\morgan\package.json
+32 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\node-xmpp-client\package.json
+33 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\serve-favicon\package.json
+34 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\simple-xmpp\package.json
+35 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\socket.io\package.json
+36 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\.bin\bower\package.json
+37 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\.bin\bower.cmd\package.json
+38 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\.bin\jade\package.json
+39 verbose targetResolver reading package data from C:\Users\mario\Desktop\NodeXMPP\node_modules\.bin\jade.cmd\package.json
+40 verbose already installed skipping simple-xmpp@^1.3.0 C:\Users\mario\Desktop\NodeXMPP
+41 verbose already installed skipping socket.io@^1.4.5 C:\Users\mario\Desktop\NodeXMPP
+42 verbose already installed skipping body-parser@~1.13.2 C:\Users\mario\Desktop\NodeXMPP
+43 verbose already installed skipping bower@~1.7.9 C:\Users\mario\Desktop\NodeXMPP
+44 verbose already installed skipping connect-busboy@0.0.2 C:\Users\mario\Desktop\NodeXMPP
+45 verbose already installed skipping cookie-parser@~1.3.5 C:\Users\mario\Desktop\NodeXMPP
+46 verbose already installed skipping debug@~2.2.0 C:\Users\mario\Desktop\NodeXMPP
+47 verbose already installed skipping express@~4.13.1 C:\Users\mario\Desktop\NodeXMPP
+48 verbose already installed skipping jade@~1.11.0 C:\Users\mario\Desktop\NodeXMPP
+49 verbose already installed skipping morgan@~1.6.1 C:\Users\mario\Desktop\NodeXMPP
+50 verbose already installed skipping node-xmpp-client@^3.0.0 C:\Users\mario\Desktop\NodeXMPP
+51 verbose already installed skipping serve-favicon@~2.3.0 C:\Users\mario\Desktop\NodeXMPP
+52 silly install resolved []
+53 info build C:\Users\mario\Desktop\NodeXMPP
+54 info linkStuff NodeXMPP@0.0.0
+55 silly linkStuff NodeXMPP@0.0.0 has C:\Users\mario\Desktop as its parent node_modules
+56 verbose linkBins NodeXMPP@0.0.0
+57 verbose linkMans NodeXMPP@0.0.0
+58 verbose rebuildBundles NodeXMPP@0.0.0
+59 verbose rebuildBundles [ '.bin',
+59 verbose rebuildBundles   'body-parser',
+59 verbose rebuildBundles   'bower',
+59 verbose rebuildBundles   'connect-busboy',
+59 verbose rebuildBundles   'cookie-parser',
+59 verbose rebuildBundles   'debug',
+59 verbose rebuildBundles   'express',
+59 verbose rebuildBundles   'jade',
+59 verbose rebuildBundles   'morgan',
+59 verbose rebuildBundles   'node-xmpp-client',
+59 verbose rebuildBundles   'serve-favicon',
+59 verbose rebuildBundles   'simple-xmpp',
+59 verbose rebuildBundles   'socket.io' ]
+60 info install NodeXMPP@0.0.0
+61 info postinstall NodeXMPP@0.0.0
+62 verbose unsafe-perm in lifecycle true
+63 info NodeXMPP@0.0.0 Failed to exec postinstall script
+64 verbose stack Error: NodeXMPP@0.0.0 postinstall: `./node_modules/bower/bin/bower install`
+64 verbose stack Exit status 1
+64 verbose stack     at EventEmitter.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\lifecycle.js:214:16)
+64 verbose stack     at emitTwo (events.js:87:13)
+64 verbose stack     at EventEmitter.emit (events.js:172:7)
+64 verbose stack     at ChildProcess.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\spawn.js:24:14)
+64 verbose stack     at emitTwo (events.js:87:13)
+64 verbose stack     at ChildProcess.emit (events.js:172:7)
+64 verbose stack     at maybeClose (internal/child_process.js:818:16)
+64 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+65 verbose pkgid NodeXMPP@0.0.0
+66 verbose cwd C:\Users\mario\Desktop\NodeXMPP
+67 error Windows_NT 10.0.10586
+68 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+69 error node v4.2.2
+70 error npm  v2.14.7
+71 error code ELIFECYCLE
+72 error NodeXMPP@0.0.0 postinstall: `./node_modules/bower/bin/bower install`
+72 error Exit status 1
+73 error Failed at the NodeXMPP@0.0.0 postinstall script './node_modules/bower/bin/bower install'.
+73 error This is most likely a problem with the NodeXMPP package,
+73 error not with npm itself.
+73 error Tell the author that this fails on your system:
+73 error     ./node_modules/bower/bin/bower install
+73 error You can get their info via:
+73 error     npm owner ls NodeXMPP
+73 error There is likely additional logging output above.
+74 verbose exit [ 1, true ]
