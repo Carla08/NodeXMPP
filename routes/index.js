@@ -25,15 +25,16 @@ router.get('/', function(req, res, next) {
 });
 
 router.post("/", function(req,res,next){
-  res.cookie("jid",req.body.username + "@" + domain);
+  var userDomain=req.body.domain || domain;
+  res.cookie("jid",req.body.username + "@" + userDomain);
   res.cookie("password",req.body.password);
   req.app.locals.res=res;
   req.app.locals.req=req;
   res.render('chat', {
-    jid: req.body.username + "@" + domain,
+    jid: req.body.username + "@" + userDomain,
     password: req.body.password,
     host: req.body.host,
-    domain: req.body.domain,
+    domain: userDomain,
     port: req.body.port
   });
   }

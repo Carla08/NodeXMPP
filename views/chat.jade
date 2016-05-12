@@ -23,7 +23,7 @@ block script
         var user="#{jid}";
         var socket = io();
         var actual_user = "#{jid}";
-        socket.emit("init", "#{jid}","#{password}");
+        socket.emit("init", "#{jid}","#{password}","#{host}","#{domain}","#{port}");
         //Chat Template
         var chatTemplate = $("<ul>").addClass("collection").attr("id","message");
         var chatsByUser={};

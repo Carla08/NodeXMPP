@@ -38,7 +38,8 @@ io.on('connection', function(socket){
       app.locals.users[jid] = socket.id;
       app.locals.sockets[socket.id] = {
         jid: jid,
-        socket: socket
+        socket: socket,
+        credentials:true
       };
       xmpp.getRoster();
       xmpp.setPresence("chat");
@@ -51,6 +52,14 @@ io.on('connection', function(socket){
         host: domain,
         port: port
       });
+      app.locals.users[jid] = socket.id;
+      app.locals.sockets[socket.id] = {
+        jid: jid,
+        socket: socket,
+        credentials:true
+      };
+      xmpp.getRoster();
+      xmpp.setPresence("chat");
     }
     xmpp.on('online', function (data) {
         console.log('Connected with JID: ' + data.jid.user);
