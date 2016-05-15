@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-var xmpp = require('simple-xmpp');
+var SimpleXMPP = require('simple-xmpp').SimpleXMPP;
 var routes = require('./routes/index');
 var busboy = require('connect-busboy');
 var session =require("express-session");
@@ -17,12 +17,12 @@ app.use(busboy());
 var port = 5222;
 var domain="cml.chi.itesm.mx";
 app.locals.io=io;
-app.locals.xmpp=xmpp;
+
 
 var users={};
 var sockets={};
 
-
+var allXMPPClients=[];
 //XMPP MTHODS:
 
 //var contacts_state = [];
@@ -32,7 +32,8 @@ var sockets={};
 
 
 io.on('connection', function(socket){
-
+  var xmpp = new SimpleXMPP();
+  xmpp.user;
   socket.on("init", function (jid,password,custom_host, custom_domain, custom_port){
     domain = custom_host || custom_domain || domain;
     port = custom_port || port;
@@ -49,9 +50,10 @@ io.on('connection', function(socket){
 
 
     xmpp.on('online', function (data) {
-        console.log('Connected with JID: ' + data.jid.user);
+      xmpp.user= data.jid.user+"@"+data.jid._domain;
+        console.log('Connected with JID: ' + xmpp.user);
         console.log('Yes, I\'m connected!');
-          users[jid] = socket.id;
+          users[xmpp.user] = socket.id;
           sockets[socket.id] = {
             jid: jid,
             socket: socket
@@ -71,7 +73,7 @@ io.on('connection', function(socket){
         contacts.forEach(function (contact,index, array){
 
             var temp = {jid : contact};
-            var user= getSocket(stanza.attrs.to.split("/")[0]);
+            var user= getSocket(xmpp.user);
             if(user)
               user.socket.emit("append", temp);
 
@@ -79,7 +81,7 @@ io.on('connection', function(socket){
       }
       else if(stanza.is('presence') && stanza.attrs.type === "subscribe" && app.locals.session && users[app.locals.session.jid]){
         //TO DO: SHOW FRIND REQUEST
-        var user= getSocket(app.locals.session.jid);
+        var user= getSocket(xmpp.user);
         user.socket.emit('showFriendRequest', stanza.attrs.from);
       }else if(stanza.is("message") && (stanza.attrs.from.indexOf("conference") != -1) && (stanza.attrs.type==="normal")) {
         var group_name = stanza.attrs.from.split("@")[0];
@@ -95,6 +97,12 @@ io.on('connection', function(socket){
 
     }
     delete sockets[socket.id];
+    try{
+      xmpp.disconnect();
+    }catch (err){
+      console.log(err);
+    }
+
     //var jid= sockets[socket.id].jid;
     //delete sockets[socket.id];
     //delete users[jid];
@@ -135,14 +143,14 @@ io.on('connection', function(socket){
   });
   xmpp.on('buddy', function(jid, state, statusText,resource) {
 
-      var user = getSocket(app.locals.session.jid);
+      var user = getSocket(xmpp.user);
       if (user) user.socket.emit("buddy",jid,state);
 
   });
   xmpp.on('chat', function(from, message) {
     if(lastmessage!== (from+message)){
       lastmessage=from+message;
-      var user= getSocket(app.locals.session.jid);
+      var user= getSocket(xmpp.user);
       if(user){
         user.socket.emit("chat message", from,message);
       }
@@ -150,7 +158,8 @@ io.on('connection', function(socket){
 
   });
   xmpp.on('groupchat', function(room, from, message) {
-    socket.emit("groupchat", room, from, message);
+    var user= getSocket(xmpp.user);
+    user.socket.emit("groupchat", room, from, message);
   });
   socket.on ("createGroup", function (jid,user_nick, group_name, members, message){
 
@@ -224,11 +233,12 @@ app.post("/", function(req,res,next){
 
 
 app.get("/logoff" ,(req,res,next)=>{
-  var jid= req.cookies.jid;
-  delete req.app.locals.users[jid];
+  var jid= req.session.jid;
+  delete users[jid];
+  req.session.destroy();
   res.clearCookie("jid");
   res.clearCookie("password");
-  app.locals.xmpp.disconnect();
+  //xmpp.disconnect();
   res.redirect("/");
 });
 
