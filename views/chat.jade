@@ -19,289 +19,293 @@ block content
     include setPresence
 block script
     script.
-        var domain="http://localhost:3000"
-        var user="#{jid}";
-        var socket = io();
-        var actual_user = "#{jid}";
-        socket.emit("init", "#{jid}","#{password}","#{host}","#{domain}","#{port}");
-        //Chat Template
-        var chatTemplate = $("<ul>").addClass("collection").attr("id","message");
-        var chatsByUser={};
-        var actualChattingUser;
-        var ref = new Firebase('https://importantmsgs.firebaseio.com/');
+        $(document).ready(function (){
+            var domain = "http://localhost:3000"
+            var user = "#{jid}";
+
+            var actual_user = "#{jid}";
+            var socket = io();
+            //Chat Template
+            var chatTemplate = $("<ul>").addClass("collection").attr("id", "message");
+            var chatsByUser = {};
+            var actualChattingUser;
+            var ref = new Firebase('https://importantmsgs.firebaseio.com/');
 
 
-        var contactTemplate=$("<li >").addClass("collection-item avatar hoverable animated fadeInLeft white");
-        var icon=$("<i>").addClass("material-icons circle").text("perm_identity");
-        var jid =$("<span>").addClass("title");
-        var messages=$("<p>").addClass("materialize-red-text");
-        var new_friend = "";
-        var new_group = "";
-        contactTemplate.append(icon);
-        contactTemplate.append(jid);
+            var contactTemplate = $("<li >").addClass("collection-item avatar hoverable animated fadeInLeft white");
+            var icon = $("<i>").addClass("material-icons circle").text("perm_identity");
+            var jid = $("<span>").addClass("title");
+            var messages = $("<p>").addClass("materialize-red-text");
+            var new_friend = "";
+            var new_group = "";
+            contactTemplate.append(icon);
+            contactTemplate.append(jid);
 
 
-        var currentReceiver = "";
-        $(".button-collapse").sideNav();
+            var currentReceiver = "";
+            $(".button-collapse").sideNav();
 
-        function saveLink(from, user, link){
-            ref.push({
-                from: from,
-                user: actual_user,
-                message: link
-            });
-        }
-
-
-
-        $('form').submit(function () {
-            var msg = $("#m").val();
-            var message = $('<li class="collection-item left-align green lighten-4 right-align">').text(msg);
-            message.click(function () {
-                 ref.push({
-                    message : msg,
-                    from: actual_user,
-                    user: actual_user
-                 });
-                 $(this).removeClass("green lighten-4");
-                 $(this).addClass("red lighten-2");
-            });
-            if(msg.startsWith("http")){
-                saveLink(actual_user,actual_user,msg);
-                message.removeClass("green lighten-4");
-                message.addClass("teal lighten-2");
-                message.addClass("white-text")
+            function saveLink(from, user, link) {
+                ref.push({
+                    from: from,
+                    user: actual_user,
+                    message: link
+                });
             }
-            $('#messages').append(message);
 
-            socket.emit('chatTo', actualChattingUser, $('#m').val());
-            $('#m').val('');
-            return false;
-        });
 
-        $("#addFriendButton").click(function () {
-            socket.emit("addFriend", $("#addFriendUser").val());
-            $("#addFriendUser").val("");
-        });
-
-        $("#showImportantsButton").click(function () {
-            var modal = $("#msgs");
-            ref.orderByChild("user").equalTo(actual_user).on("value", function(snapshot) {
-                var msg_array = snapshot.val();
-                for (var property in msg_array){
-                    if(msg_array.hasOwnProperty(property)){
-                        modal.append("<p><strong>" + msg_array[property].from + "</strong> said: " + msg_array[property].message);
-                       //console.log(msg_array[property].from) 
-                    }
+            $('form').submit(function () {
+                var msg = $("#m").val();
+                var message = $('<li class="collection-item left-align green lighten-4 right-align">').text(msg);
+                message.click(function () {
+                    ref.push({
+                        message: msg,
+                        from: actual_user,
+                        user: actual_user
+                    });
+                    $(this).removeClass("green lighten-4");
+                    $(this).addClass("red lighten-2");
+                });
+                if (msg.startsWith("http")) {
+                    saveLink(actual_user, actual_user, msg);
+                    message.removeClass("green lighten-4");
+                    message.addClass("teal lighten-2");
+                    message.addClass("white-text")
                 }
+                $('#messages').append(message);
+
+                socket.emit('chatTo', actualChattingUser, $('#m').val());
+                $('#m').val('');
+                return false;
             });
-        });
 
-        /* Methods for presence*/
-        $("#Online").click(function() {
-            socket.emit("setPresence", "online");
-        });
+            $("#addFriendButton").click(function () {
+                socket.emit("addFriend", $("#addFriendUser").val());
+                $("#addFriendUser").val("");
+            });
 
-        $("#Away").click(function() {
-            socket.emit("setPresence", "away");
-        });
+            $("#showImportantsButton").click(function () {
+                var modal = $("#msgs");
+                ref.orderByChild("user").equalTo(actual_user).on("value", function (snapshot) {
+                    var msg_array = snapshot.val();
+                    for (var property in msg_array) {
+                        if (msg_array.hasOwnProperty(property)) {
+                            modal.append("<p><strong>" + msg_array[property].from + "</strong> said: " + msg_array[property].message);
+                            //console.log(msg_array[property].from)
+                        }
+                    }
+                });
+            });
 
-        $("#Offline").click(function() {
-            socket.emit("setPresence", "offline");
-        });
-        /**************************/
+            /* Methods for presence*/
+            $("#Online").click(function () {
+                socket.emit("setPresence", "online");
+            });
 
-        $("#createGroupButton").click(function () {
-            var nick = $("#userNick").val();
-            var group_name = $("#groupName").val();
-            var inviting_message = $("#inviteMessage").val();
-            var members = $("#members").val();
-            createBadge({jid:group_name+"@conference.#{domain}"});
-            $(document.getElementById(group_name+"@conference.#{domain}")).find("i").text("supervisor_account");
-           socket.emit("createGroup",user, nick, group_name, members, inviting_message);
-        });
+            $("#Away").click(function () {
+                socket.emit("setPresence", "away");
+            });
 
-        socket.on("append", function (contact) {
-            createBadge({jid:contact})
-        });
+            $("#Offline").click(function () {
+                socket.emit("setPresence", "offline");
+            });
+            /**************************/
 
-        socket.on("groupchat", function (room, from, msg) {
-            var message = $('<li class="collection-item left-align green hoverable lighten-4">');
-            if(msg.startsWith("http")){
-                saveLink(actual_user,actual_user,msg);
-                message.removeClass("green lighten-4");
-                message.addClass("teal lighten-2");
-                message.addClass("white-text")
-            }
-            if (chatsByUser[room]){
-                if(actualChattingUser===room){
-                    $('#messages').append(message.text(msg));
-                }else{
-                    chatsByUser[room].append(message).text( from + " says " + msg);
+            $("#createGroupButton").click(function () {
+                var nick = $("#userNick").val();
+                var group_name = $("#groupName").val();
+                var inviting_message = $("#inviteMessage").val();
+                var members = $("#members").val();
+                createBadge({jid: group_name + "@conference.#{domain}"});
+                $(document.getElementById(group_name + "@conference.#{domain}")).find("i").text("supervisor_account");
+                socket.emit("createGroup", user, nick, group_name, members, inviting_message);
+            });
+
+            socket.on("append", function (contact) {
+                createBadge({jid: contact})
+            });
+
+            socket.on("groupchat", function (room, from, msg) {
+                var message = $('<li class="collection-item left-align green hoverable lighten-4">');
+                if (msg.startsWith("http")) {
+                    saveLink(actual_user, actual_user, msg);
+                    message.removeClass("green lighten-4");
+                    message.addClass("teal lighten-2");
+                    message.addClass("white-text")
+                }
+                if (chatsByUser[room]) {
+                    if (actualChattingUser === room) {
+                        $('#messages').append(message.text(msg));
+                    } else {
+                        chatsByUser[room].append(message).text(from + " says " + msg);
+                        $(document.getElementById(room)).removeClass("fadeInLeft");
+                        $(document.getElementById(room)).addClass("animated infinite shake");
+                    }
+
+
+                } else {
+                    createBadge({jid: room});
+                    $(document.getElementById(from)).find("i").text("supervisor_account");
+                    chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
+                            from + " says " + msg));
                     $(document.getElementById(room)).removeClass("fadeInLeft");
                     $(document.getElementById(room)).addClass("animated infinite shake");
+
                 }
-
-
-            }else{
-                createBadge({jid:room});
-                $(document.getElementById(from)).find("i").text("supervisor_account");
-                chatsByUser[room].append($('<li class="collection-item left-align green lighten-4">').text(
-                        from + " says " + msg));
-                $(document.getElementById(room)).removeClass("fadeInLeft");
-                $(document.getElementById(room)).addClass("animated infinite shake");
-
-            }
-            message.click(function () {
-                 ref.push({
-                    message : msg,
-                    from: room,
-                    user: actual_user
-                 });
-                 $(this).removeClass("green lighten-4");
-                 $(this).addClass("red lighten-2");
-             });
-        });
-
-        socket.on('chat message', function (from,msg) {
-            var message = $('<li class="collection-item left-align green hoverable lighten-4">').text(msg);
-            message.click(function () {
-                 ref.push({
-                    message : msg,
-                    from: from,
-                    user: actual_user
-                 });
-                 $(this).removeClass("green lighten-4");
-                 $(this).addClass("red lighten-2");
+                message.click(function () {
+                    ref.push({
+                        message: msg,
+                        from: room,
+                        user: actual_user
+                    });
+                    $(this).removeClass("green lighten-4");
+                    $(this).addClass("red lighten-2");
+                });
             });
-            if(msg.startsWith("http")){
-                saveLink(actual_user,actual_user,msg);
-                message.removeClass("green lighten-4");
-                message.addClass("teal lighten-2");
-                message.addClass("white-text")
-            }
-        if (from===actualChattingUser){
-            $('#messages').append(message);
-        }else{
-            chatsByUser[from].append(message);
-            $(document.getElementById(from)).removeClass("fadeInLeft");
-            $(document.getElementById(from)).addClass("animated infinite shake");
-        }
 
-
-
-        });
-        socket.on("contact", function (contacts) {
-        $("#contacts").append($('<li class="collection-item">').text(msg));
-        });
-        
-        socket.on("showFriendRequest", function (contact){
-        new_friend = contact;
-        $("#friendRequestFrom").append("Friend request from: " + contact);
-        $('#friendRequest').openModal();
-        });
-
-        $("#acceptFriend").click(function () {
-            socket.emit("acceptFriend", new_friend);
-        new_friend = "";
-        });
-
-
-        function createBadge(badgeName){
-            var contactBadge = contactTemplate.clone();
-            contactBadge.find("span.title").text(badgeName.jid.split("@")[0]);
-            contactBadge.attr("id", badgeName.jid);
-            contactBadge.find("i").addClass("green");
-            chatsByUser[badgeName.jid] = chatTemplate.clone();
-            contactBadge.click(function (event) {
-                if (!actualChattingUser) {
-                    $(this).addClass("teal lighten-2");
-                    actualChattingUser = $(this).attr('id');
-                    $(this).removeClass("shake");
-                    $("#messages").append(chatsByUser[$(this).attr('id')].find("*"));
-                } else if (actualChattingUser !== $(this).attr('id')) {
-                    $(this).removeClass("shake");
-                    var messagesInchat = $("#messages").find("*");
-                    chatsByUser[actualChattingUser].empty();
-                    chatsByUser[actualChattingUser].append(messagesInchat);
-                    $("#contacts").find(".teal.lighten-2").removeClass("teal lighten-2");
-                    $(this).addClass("teal lighten-2");
-                    $("#messages").empty();
-                    $("#messages").append(chatsByUser[$(this).attr('id')]);
-                    actualChattingUser = $(this).attr('id');
+            socket.on('chat message', function (from, msg) {
+                var message = $('<li class="collection-item left-align green hoverable lighten-4">').text(msg);
+                message.click(function () {
+                    ref.push({
+                        message: msg,
+                        from: from,
+                        user: actual_user
+                    });
+                    $(this).removeClass("green lighten-4");
+                    $(this).addClass("red lighten-2");
+                });
+                if (msg.startsWith("http")) {
+                    saveLink(actual_user, actual_user, msg);
+                    message.removeClass("green lighten-4");
+                    message.addClass("teal lighten-2");
+                    message.addClass("white-text")
                 }
+                if (from === actualChattingUser) {
+                    $('#messages').append(message);
+                } else {
+                    chatsByUser[from].append(message);
+                    $(document.getElementById(from)).removeClass("fadeInLeft");
+                    $(document.getElementById(from)).addClass("animated infinite shake");
+                }
+
 
             });
-            $("#contacts").append(contactBadge)
-        }
+            socket.on("contact", function (contacts) {
+                $("#contacts").append($('<li class="collection-item">').text(msg));
+            });
 
-        socket.on("showGroupMessage", function (groupName, inviter, message){
-        new_group = groupName;
-        $("#groupRequestFrom").append(inviter + " has invited you to join " + groupName + "<br>" + message);
-        $('#groupRequest').openModal();
-        });
+            socket.on("showFriendRequest", function (contact) {
+                new_friend = contact;
+                $("#friendRequestFrom").append("Friend request from: " + contact);
+                $('#friendRequest').openModal();
+            });
 
-        socket.on("buddy", function(jid,status){
-            if(chatsByUser[jid]){
-                var userIcon=$(document.getElementById(jid)).find("i");
-                switch (status){
-                    case "offline":
-                        userIcon.removeClass("green orange");
-                        userIcon.addClass("grey");
-                        break;
-                    case "away":
-                        userIcon.removeClass("green grey");
-                        userIcon.addClass("orange");
-                        break;
-                    case "online":
-                        userIcon.removeClass("orange grey");
-                        userIcon.addClass("green");
-                }
-            }else{
-                createBadge({jid:jid});
-            }
-        });
-         $("#acceptGroup").click(function () {
-            createBadge(new_group);
-             $(document.getElementById(new_group)).find("i").text("supervisor_account");
-             new_group = " ";
-        });
+            $("#acceptFriend").click(function () {
+                socket.emit("acceptFriend", new_friend);
+                new_friend = "";
+            });
 
 
-        $("#searchContact").keyup(function(){
-            var searchString=$(this).val();
-            if (searchString !== ""){
-                $("li.collection-item.avatar").each(function (){
-                    if (!$(this).find("span").text().startsWith(searchString)){
-                        $(this).addClass("hide");
+            function createBadge(badgeName) {
+                var contactBadge = contactTemplate.clone();
+                contactBadge.find("span.title").text(badgeName.jid.split("@")[0]);
+                contactBadge.attr("id", badgeName.jid);
+                contactBadge.find("i").addClass("green");
+                chatsByUser[badgeName.jid] = chatTemplate.clone();
+                contactBadge.click(function (event) {
+                    if (!actualChattingUser) {
+                        $(this).addClass("teal lighten-2");
+                        actualChattingUser = $(this).attr('id');
+                        $(this).removeClass("shake");
+                        $("#messages").append(chatsByUser[$(this).attr('id')].find("*"));
+                    } else if (actualChattingUser !== $(this).attr('id')) {
+                        $(this).removeClass("shake");
+                        var messagesInchat = $("#messages").find("*");
+                        chatsByUser[actualChattingUser].empty();
+                        chatsByUser[actualChattingUser].append(messagesInchat);
+                        $("#contacts").find(".teal.lighten-2").removeClass("teal lighten-2");
+                        $(this).addClass("teal lighten-2");
+                        $("#messages").empty();
+                        $("#messages").append(chatsByUser[$(this).attr('id')]);
+                        actualChattingUser = $(this).attr('id');
                     }
+
                 });
-            }else{
-                $("li.collection-item.avatar.hide").each(function(){
-                    $(this).toggleClass("hide");
-                });
+                $("#contacts").append(contactBadge)
             }
+
+            socket.on("showGroupMessage", function (groupName, inviter, message) {
+                new_group = groupName;
+                $("#groupRequestFrom").append(inviter + " has invited you to join " + groupName + "<br>" + message);
+                $('#groupRequest').openModal();
+            });
+
+            socket.on("buddy", function (jid, status) {
+                if (chatsByUser[jid]) {
+                    var userIcon = $(document.getElementById(jid)).find("i");
+                    switch (status) {
+                        case "offline":
+                            userIcon.removeClass("green orange");
+                            userIcon.addClass("grey");
+                            break;
+                        case "away":
+                            userIcon.removeClass("green grey");
+                            userIcon.addClass("orange");
+                            break;
+                        case "online":
+                            userIcon.removeClass("orange grey");
+                            userIcon.addClass("green");
+                    }
+                } else {
+                    createBadge({jid: jid});
+                }
+            });
+            $("#acceptGroup").click(function () {
+                createBadge(new_group);
+                $(document.getElementById(new_group)).find("i").text("supervisor_account");
+                new_group = " ";
+            });
+
+
+            $("#searchContact").keyup(function () {
+                var searchString = $(this).val();
+                if (searchString !== "") {
+                    $("li.collection-item.avatar").each(function () {
+                        if (!$(this).find("span").text().startsWith(searchString)) {
+                            $(this).addClass("hide");
+                        }
+                    });
+                } else {
+                    $("li.collection-item.avatar.hide").each(function () {
+                        $(this).toggleClass("hide");
+                    });
+                }
+            });
+
+            $("form#file").submit(function (event) {
+                var formData = new FormData($("form#file")[0]);
+                $.ajax({
+                    type: "POST",
+                    url: "/files/" + user,
+                    data: formData,
+                    success: function (data) {
+                        var url = domain + data;
+                        var link = $("<a>").addClass("btn waves-effect").attr("href", url);
+                        $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text(url));
+                        socket.emit('chatTo', actualChattingUser, url);
+                        saveLink(actual_user, actual_user, url);
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+                event.preventDefault();
+            });
+
+
+            socket.emit("init", "#{jid}", "#{password}", "#{host}", "#{domain}", "#{port}");
         });
 
-        $("form#file").submit(function (event){
-            var formData= new FormData($("form#file")[0]);
-            $.ajax({
-                type: "POST",
-                url: "/files/"+user,
-                data:formData,
-                success: function (data){
-                    var url = domain+data;
-                    var link=$("<a>").addClass("btn waves-effect").attr("href",url);
-                    $('#messages').append($('<li class="collection-item left-align green lighten-4 right-align">').text(url));
-                    socket.emit('chatTo', actualChattingUser, url);
-                    saveLink(actual_user,actual_user,url);
-                },
-                cache: false,
-                contentType: false,
-                processData: false
-            });
-            event.preventDefault();
-        });
 
 
 
